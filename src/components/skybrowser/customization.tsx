@@ -1,8 +1,15 @@
-import * as React from 'react';
-import { useState, useCallback, useEffect, useMemo, useRef, createRef } from 'react';
-import { filter } from 'lodash';
+import * as React from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  createRef,
+} from "react";
+import { filter } from "lodash";
 //import DemoFsMap from '../../_mocks_/chonky_data.json';
-import DemoFsMap from '../../_mocks_/chonky_skyfs_data.json';
+import DemoFsMap from "../../_mocks_/chonky_skyfs_data.json";
 import {
   ChonkyActions,
   ChonkyActionUnion,
@@ -15,13 +22,13 @@ import {
   FullFileBrowser,
   setChonkyDefaults,
   defineFileAction,
-  ChonkyIconName
-} from 'chonky';
-import { useFileManager } from '../../contexts';
+  ChonkyIconName,
+} from "chonky";
+import { useFileManager } from "../../contexts";
 
 // Custom File Action
 export const addUploadedFiles = defineFileAction({
-  id: 'add_uploaded_files',
+  id: "add_uploaded_files",
   // hotkeys: ['ctrl+o'],
   // button: {
   //   name: 'Add Uploaded Files',
@@ -30,7 +37,7 @@ export const addUploadedFiles = defineFileAction({
   //   icon: ChonkyIconName.flash,
   // },
   __payloadType: {} as CustomFileData,
-})
+});
 //
 // Define your actions
 // const customActionOne = defineFileAction({
@@ -44,18 +51,31 @@ export const addUploadedFiles = defineFileAction({
 // Define your types
 //type CustomActionUnion = typeof customActionOne | typeof customActionTwo;
 type CustomActionUnion = typeof addUploadedFiles;
-export type CustomHandler = GenericFileActionHandler<ChonkyActionUnion | CustomActionUnion>;
+export type CustomHandler = GenericFileActionHandler<
+  ChonkyActionUnion | CustomActionUnion
+>;
 
-const fileActions =  [
-    ChonkyActions.CreateFolder,
-    ChonkyActions.DeleteFiles,
-    ChonkyActions.UploadFiles,
-    ChonkyActions.DownloadFiles,
-    ChonkyActions.DeleteFiles,
-    ChonkyActions.CopyFiles,
-  ];
+const fileActions = [
+  ChonkyActions.CreateFolder,
+  ChonkyActions.DeleteFiles,
+  ChonkyActions.UploadFiles,
+  ChonkyActions.DownloadFiles,
+  ChonkyActions.DeleteFiles,
+  ChonkyActions.CopyFiles,
+];
 
-export const customFileActions = [...fileActions,addUploadedFiles];
+// const fileActions = useMemo(
+//   () => [
+//     ChonkyActions.CreateFolder,
+//     ChonkyActions.DeleteFiles,
+//     ChonkyActions.UploadFiles,
+//     ChonkyActions.DownloadFiles,
+//     ChonkyActions.DeleteFiles,
+//     ChonkyActions.CopyFiles
+//   ],
+//   []
+// );
+export const customFileActions = [...fileActions, addUploadedFiles];
 
 //-- end
 
@@ -71,7 +91,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -84,7 +104,10 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(
+      array,
+      (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+    );
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -106,19 +129,16 @@ const prepareCustomFileMap = () => {
   return { baseFileMap, rootFolderId };
 };
 
-
-
 // Hook that sets up our file map and defines functions used to mutate - `deleteFiles`,
 // `moveFiles`, and so on.
 export const useCustomFileMap = () => {
   //const { getDirectoryIndex, createDirectory } = useFileManager();
-  
+
   let { baseFileMap, rootFolderId } = useMemo(prepareCustomFileMap, []);
 
   // Setup the React state for our file map and the current folder.
   const [fileMap, setFileMap] = useState(baseFileMap);
   const [currentFolderId, setCurrentFolderId] = useState(rootFolderId);
-
 
   // Setup the function used to reset our file map to its initial value. Note that
   // here and below we will always use `useCallback` hook for our functions - this is
@@ -153,7 +173,7 @@ export const useCustomFileMap = () => {
         newFileMap[file.id] = {
           ...file,
           modDate: new Date(),
-          parentId: currentFolderIdRef.current
+          parentId: currentFolderIdRef.current,
         };
         file.parentId = currentFolderIdRef.current;
         // Update the parent folder to make sure new files are added as children objects
@@ -164,7 +184,7 @@ export const useCustomFileMap = () => {
           newFileMap[file.parentId] = {
             ...parent,
             childrenIds: [...parent.childrenIds!, file.id],
-            childrenCount: parent.childrenIds.length
+            childrenCount: parent.childrenIds.length,
           };
         }
       });
@@ -193,11 +213,13 @@ export const useCustomFileMap = () => {
         // file we just deleted.
         if (file.parentId) {
           const parent = newFileMap[file.parentId]!;
-          const newChildrenIds = parent.childrenIds!.filter((id) => id !== file.id);
+          const newChildrenIds = parent.childrenIds!.filter(
+            (id) => id !== file.id
+          );
           newFileMap[file.parentId] = {
             ...parent,
             childrenIds: newChildrenIds,
-            childrenCount: newChildrenIds.length
+            childrenCount: newChildrenIds.length,
           };
         }
       });
@@ -209,25 +231,34 @@ export const useCustomFileMap = () => {
   // Function that will be called when files are moved from one folder to another
   // using drag & drop.
   const moveFiles = useCallback(
-    (files: CustomFileData[], source: CustomFileData, destination: CustomFileData) => {
+    (
+      files: CustomFileData[],
+      source: CustomFileData,
+      destination: CustomFileData
+    ) => {
       setFileMap((currentFileMap) => {
         const newFileMap = { ...currentFileMap };
         const moveFileIds = new Set(files.map((f) => f.id));
 
         // Delete files from their source folder.
-        const newSourceChildrenIds = source.childrenIds!.filter((id) => !moveFileIds.has(id));
+        const newSourceChildrenIds = source.childrenIds!.filter(
+          (id) => !moveFileIds.has(id)
+        );
         newFileMap[source.id] = {
           ...source,
           childrenIds: newSourceChildrenIds,
-          childrenCount: newSourceChildrenIds.length
+          childrenCount: newSourceChildrenIds.length,
         };
 
         // Add the files to their destination folder.
-        const newDestinationChildrenIds = [...destination.childrenIds!, ...files.map((f) => f.id)];
+        const newDestinationChildrenIds = [
+          ...destination.childrenIds!,
+          ...files.map((f) => f.id),
+        ];
         newFileMap[destination.id] = {
           ...destination,
           childrenIds: newDestinationChildrenIds,
-          childrenCount: newDestinationChildrenIds.length
+          childrenCount: newDestinationChildrenIds.length,
         };
 
         // Finally, update the parent folder ID on the files from source folder
@@ -235,7 +266,7 @@ export const useCustomFileMap = () => {
         files.forEach((file) => {
           newFileMap[file.id] = {
             ...file,
-            parentId: destination.id
+            parentId: destination.id,
           };
         });
 
@@ -250,33 +281,36 @@ export const useCustomFileMap = () => {
   // not a good practice in production! Instead, you should use something like UUIDs
   // or MD5 hashes for file paths.
   const idCounter = useRef(0);
-  const createFolder = useCallback((folderName: string) => {
-    setFileMap((currentFileMap) => {
-      const newFileMap = { ...currentFileMap };
+  const createFolder = useCallback(
+    (folderName: string, folderId: string) => {
+      setFileMap((currentFileMap) => {
+        const newFileMap = { ...currentFileMap };
+        // Create the new folder
+        //TODO: create valid folderID
+        //const newFolderId = `new-folder-${idCounter.current++}`;
+        newFileMap[folderId] = {
+          id: folderId,
+          name: folderName,
+          isDir: true,
+          modDate: new Date(),
+          color: "red", // Color to use for this file
+          parentId: currentFolderIdRef.current,
+          childrenIds: [],
+          childrenCount: 0,
+        };
 
-      // Create the new folder
-      //TODO: create valid folderID
-      const newFolderId = `new-folder-${idCounter.current++}`;
-      newFileMap[newFolderId] = {
-        id: newFolderId,
-        name: folderName,
-        isDir: true,
-        modDate: new Date(),
-        parentId: currentFolderIdRef.current,
-        childrenIds: [],
-        childrenCount: 0
-      };
+        // Update parent folder to reference the new folder.
+        const parent = newFileMap[currentFolderIdRef.current];
+        newFileMap[currentFolderIdRef.current] = {
+          ...parent,
+          childrenIds: [...parent.childrenIds!, folderId],
+        };
 
-      // Update parent folder to reference the new folder.
-      const parent = newFileMap[currentFolderIdRef.current];
-      newFileMap[currentFolderIdRef.current] = {
-        ...parent,
-        childrenIds: [...parent.childrenIds!, newFolderId]
-      };
-
-      return newFileMap;
-    });
-  }, []);
+        return newFileMap;
+      });
+    },
+    []
+  );
 
   return {
     fileMap,
@@ -286,11 +320,13 @@ export const useCustomFileMap = () => {
     deleteFiles,
     moveFiles,
     createFolder,
-    uploadFiles
+    uploadFiles,
   };
 };
-
-export const useFiles = (fileMap: CustomFileMap, currentFolderId: string): FileArray => {
+export const useFiles = (
+  fileMap: CustomFileMap,
+  currentFolderId: string
+): FileArray => {
   return useMemo(() => {
     const currentFolder = fileMap[currentFolderId];
     const childrenIds = currentFolder.childrenIds!;
@@ -299,7 +335,10 @@ export const useFiles = (fileMap: CustomFileMap, currentFolderId: string): FileA
   }, [currentFolderId, fileMap]);
 };
 
-export const useFolderChain = (fileMap: CustomFileMap, currentFolderId: string): FileArray => {
+export const useFolderChain = (
+  fileMap: CustomFileMap,
+  currentFolderId: string
+): FileArray => {
   return useMemo(() => {
     const currentFolder = fileMap[currentFolderId];
     const folderChain = [currentFolder];

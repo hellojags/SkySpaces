@@ -57,7 +57,7 @@ const createUploadErrorMessage = (error) => {
 //const client = new SkynetClient("https://skynetpro.net");
 const client = new SkynetClient("https://siasky.net");
 
-export default function UploaderElement({upload,skypath}) {
+export default function UploaderElement({upload,folderPath}) {
   const [copied, setCopied] = React.useState(false);
   const [, , reset] = useTimeoutFn(() => setCopied(false), ms('3 seconds'));
   const [retryTimeout, setRetryTimeout] = React.useState(ms('3 seconds')); // retry delay after "429: TOO_MANY_REQUESTS"
@@ -78,7 +78,6 @@ export default function UploaderElement({upload,skypath}) {
         };
         try {
           let response;
-          const skyfsPath = skypath();
           if (upload.mode === 'directory') {
             const files = upload.file.files;
             const directory = files.reduce(
@@ -88,10 +87,10 @@ export default function UploaderElement({upload,skypath}) {
             const name = encodeURIComponent(upload.name);
             //response = await client.uploadDirectory(directory, name,{onUploadProgress});
             //response = await createFile1("/localhost/",upload.file,upload.file.name,onUploadProgress);
-            response = await createFile1(skyfsPath,upload.file,upload.file.name,onUploadProgress);
+            response = await createFile1(folderPath,upload.file,upload.file.name,onUploadProgress);
           } else {
             //response = await client.uploadFile(upload.file, { onUploadProgress });
-            response = await createFile1(skyfsPath,upload.file,upload.file.name,onUploadProgress);
+            response = await createFile1(folderPath,upload.file,upload.file.name,onUploadProgress);
           }
           const url = await client.getSkylinkUrl(response.url, {
             subdomain: upload.mode === 'directory'
