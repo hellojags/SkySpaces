@@ -1,7 +1,8 @@
-import * as React from 'react';
-import { createContext, useContext } from 'react';
-import path from 'path-browserify';
-import { nanoid } from 'nanoid';
+import * as React from "react";
+import { createContext, useContext } from "react";
+import path from "path-browserify";
+import { nanoid } from "nanoid";
+import { FileWithPath } from "react-dropzone";
 
 const MAX_PARALLEL_UPLOADS = 1;
 const getFilePath = (file) => file.webkitRelativePath || file.path || file.name;
@@ -15,16 +16,19 @@ export type uploads = {
   id: string;
   name: string; // mostly we get this populated only in case of Directory
   mode: string; // file or directory
-  files: File[];
+  files: FileWithPath[];
   url: string;
-  fileData : any;
+  fileData: any;
   status: string;
+  absoluteFolderPath: string;
 };
 type State = {
+  mode: string;
+  setMode: (value: string) => void;
   uploads: uploads[];
   getUploads: () => uploads[];
   setUploads: (uploads) => void;
-  handleDrop: (files: File[]) => Promise<void>;
+  handleDrop: (files: FileWithPath[], folderPath: string) => Promise<void>;
   onUploadStateChange: (id: string, state: any) => void;
 };
 //Step2: Define Initail State
@@ -42,7 +46,7 @@ type Props = {
 
 //Step5: Create Hook for functional component access
 export function SkynetManagerProvider({ children }: Props) {
-  const [mode, setMode] = React.useState('file');
+  const [mode, setMode] = React.useState("file");
   const [uploads, setUploads] = React.useState([]);
   //const inputFilesRef: any = React.createRef();
 
@@ -52,7 +56,7 @@ export function SkynetManagerProvider({ children }: Props) {
       return [
         ...uploads.slice(0, index),
         { ...uploads[index], ...state },
-        ...uploads.slice(index + 1)
+        ...uploads.slice(index + 1),
       ];
     });
   };
@@ -72,37 +76,61 @@ export function SkynetManagerProvider({ children }: Props) {
   const getUploads = () => {
     return uploads;
   };
-  const handleDrop = async (files) => {
-    if (mode === 'directory' && files.length) {
+  const handleDrop = async (files, folderPath) => {
+    if (mode === "directory" && files.length) {
       const name = getRootDirectory(files[0]); // get the file path from the first file
       files = [{ name, files }];
     }
     setUploads((uploads) => [
-      ...files.map((file) => ({ id: nanoid(), file, mode, status: 'enqueued' })),
-      ...uploads
+      ...files.map((file) => {
+        // prepare file's folder path
+        const tempPath = folderPath + file.path;
+        //const absoluteFolderPath = tempPath[tempPath.length -1].join("/");
+        const absoluteFolderPath = tempPath.substring(
+          0,
+          tempPath.lastIndexOf(file.name)
+        );
+        return {
+          id: nanoid(),
+          file,
+          mode,
+          status: "enqueued",
+          absoluteFolderPath,
+        };
+      }),
+      ...uploads,
     ]);
   };
   React.useEffect(() => {
-    const enqueued = uploads.filter(({ status }) => status === 'enqueued');
+    const enqueued = uploads.filter(({ status }) => status === "enqueued");
     const uploading = uploads.filter(({ status }) =>
-      ['uploading', 'processing', 'retrying'].includes(status)
+      ["uploading", "processing", "retrying"].includes(status)
     );
-    const queue = enqueued.slice(0, MAX_PARALLEL_UPLOADS - uploading.length).map(({ id }) => id);
+    const queue = enqueued
+      .slice(0, MAX_PARALLEL_UPLOADS - uploading.length)
+      .map(({ id }) => id);
     if (queue.length && uploading.length < MAX_PARALLEL_UPLOADS) {
       setUploads((uploads) => {
         return uploads.map((upload) => {
-          if (queue.includes(upload.id)) return { ...upload, status: 'uploading' };
+          if (queue.includes(upload.id))
+            return { ...upload, status: "uploading" };
           return upload;
         });
       });
     }
   }, [uploads]);
   const value = {
+    mode,
+    setMode,
     uploads,
     getUploads,
     setUploads,
     handleDrop,
-    onUploadStateChange
+    onUploadStateChange,
   };
-  return <SkynetManagerContext.Provider value={value}>{children}</SkynetManagerContext.Provider>;
+  return (
+    <SkynetManagerContext.Provider value={value}>
+      {children}
+    </SkynetManagerContext.Provider>
+  );
 }

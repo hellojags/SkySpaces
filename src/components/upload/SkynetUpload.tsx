@@ -80,7 +80,7 @@ const SkynetUpload = React.forwardRef((props: any, ref) => {
   const [isDir, setIsDir] = useState(false);
   //const apiUrl = props.portal != null ? props.portal : "https://skynetpro.net";
   const gridRef = useRef();
-  const apiUrl = props.portal != null ? props.portal : "https://fileportal.org";
+  const apiUrl = props.portal != null ? props.portal : "https://siasky.net";
   const client = new SkynetClient(apiUrl);
 
   useEffect(() => {

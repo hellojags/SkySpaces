@@ -81,9 +81,6 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
 
       <NavSection navConfig={sidebarConfig} />
 
-      <Box sx={{ flexGrow: 1 }} />
-      <Box> Upload Count {uploads?.length}</Box>
-
       <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
         <Stack
           alignItems="center"
@@ -96,19 +93,21 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             bgcolor: 'grey.200'
           }}
         >
-          <Box
+          {/* <Box
             component="img"
             src="/static/illustrations/illustration_avatar.png"
             sx={{ width: 100, position: 'absolute', top: -50 }}
-          />
+          /> */}
 
           <Box sx={{ textAlign: 'center' }}>
-            <Typography gutterBottom variant="h6">
-              Get more?
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            In-Progress Counts
             </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              From only $69
+
+            <Typography paddingTop={2} gutterBottom variant="h6">
+             Uploads: {uploads?.length}
             </Typography>
+            
           </Box>
 
           <Button
@@ -116,8 +115,9 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             href="https://material-ui.com/store/items/minimal-dashboard/"
             target="_blank"
             variant="contained"
+            color="error"
           >
-            Upgrade to Pro
+           Cancel Uploads
           </Button>
         </Stack>
       </Box>

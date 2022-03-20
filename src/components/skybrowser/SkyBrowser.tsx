@@ -57,15 +57,57 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const inputFilesRef: any = useRef(); // Reference to Input type File Picker
   const fileBrowserRef = React.useRef<FileBrowserHandle>(null); // Reference to Chonky Browser component
   const [folderPath, setFolderPath] = useState("/localhost/");
-  const { uploads, onUploadStateChange, handleDrop, getUploads, setUploads } =
-    useSkynetManager();
-  const onDrop = useCallback(async (acceptedFiles) => {
-    console.log(`acceptedFiles -> ${JSON.stringify(acceptedFiles)}`);
-    await handleDrop(acceptedFiles);
-  }, []);
+
+  const {
+    mode,
+    setMode,
+    uploads,
+    onUploadStateChange,
+    handleDrop,
+    getUploads,
+    setUploads,
+  } = useSkynetManager();
+
+  const onDrop = useCallback(
+    async (acceptedFiles) => {
+      console.log(`acceptedFiles -> ${JSON.stringify(acceptedFiles)}`);
+      await handleDrop(acceptedFiles, folderPath);
+    },
+    [folderPath]
+  );
+
+  async function myCustomFileGetter(event) {
+    const files = [];
+    const fileList = event.dataTransfer
+      ? event.dataTransfer.files
+      : event.target.files;
+
+    for (var i = 0; i < fileList.length; i++) {
+      const file = fileList.item(i);
+
+      Object.defineProperty(file, "myProp", {
+        value: true,
+      });
+
+      files.push(file);
+    }
+
+    return files;
+  }
+
   const { getRootProps, getInputProps, isDragActive, inputRef } = useDropzone({
     onDrop,
+    //  onDrop, getFilesFromEvent: event => myCustomFileGetter(event)
   });
+
+  // const inputElement = inputRef.current;
+  // React.useEffect(() => {
+  //   if (!inputElement) return;
+  //   if (mode === "directory")
+  //     inputElement.setAttribute("webkitdirectory", "true");
+  //   if (mode === "file") inputElement.removeAttribute("webkitdirectory");
+  // }, [inputElement, mode]);
+
   const { getDirectoryIndex, createDirectory } = useFileManager();
   const {
     fileMap,
@@ -153,13 +195,13 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   }, []);
 
   React.useEffect(() => {
-    let skyfsPath = '/'; //Initial root directory
+    let skyfsPath = "/"; //Initial root directory
     const folderNames = folderChain?.map((folder) => folder.name);
     if (folderNames.length >= 1) {
-      skyfsPath = '/' + folderNames.join('/');
+      skyfsPath = "/" + folderNames.join("/");
     }
     console.log(`skyfsPath -> ${skyfsPath}`);
-   setFolderPath(skyfsPath);
+    setFolderPath(skyfsPath);
   }, [folderChain]);
 
   // Runs everytime uploaded files status is updated
@@ -168,11 +210,48 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       (upload) => upload.status === "complete"
     );
     completedUploads.forEach((completedUpload) => {
-      const chonkyFileData = convert2ChonkyFileData(completedUpload);
-      fileBrowserRef.current.requestFileAction(
-        addUploadedFiles,
-        chonkyFileData
+      console.log(
+        `Folder Path: ${folderPath}, completedUpload Object : ${JSON.stringify(
+          completedUpload
+        )} `
       );
+      // if completed upload file is in current folder on UI then only render else skip render.
+      // either absolute file path match with current path or  current folderpath and filefolderpath should match
+
+      // If file is uploaded at current path, display file
+      if (folderPath === completedUpload.absoluteFolderPath) {
+        // convert Upload object to Chonky FileData Object for rendering in browser
+        const chonkyFileData = convert2ChonkyFileData(completedUpload,false);
+        fileBrowserRef.current.requestFileAction(
+          addUploadedFiles,
+          chonkyFileData
+        );
+      }
+      //If folder is uploaded at current path, display folder
+      const tempRemainingPath = completedUpload.absoluteFolderPath.replace(folderPath, "").split("/");
+      if (tempRemainingPath.length === 3) {
+        // TODO: add directory parameter in convert2ChonkyFileData
+        console.log(`upload.absoluteFolderPath.split ${completedUpload.absoluteFolderPath.split("/")}`)
+        const chonkyFileData = convert2ChonkyFileData(completedUpload,true);
+        fileBrowserRef.current.requestFileAction(
+          ChonkyActions.CreateFolder,
+          chonkyFileData
+        );
+      }
+
+      // if (
+      //   folderPath.concat(`/${completedUpload.name}`) ===
+      //     completedUpload.absoluteFolderPath ||
+      //   completedUpload.absoluteFolderPath.replace(folderPath, "").split("/")
+      //     .length <= 3
+      // ) {
+      //   // convert Upload object to Chonky FileData Object for rendering in browser
+      //   const chonkyFileData = convert2ChonkyFileData(completedUpload);
+      //   fileBrowserRef.current.requestFileAction(
+      //     addUploadedFiles,
+      //     chonkyFileData
+      //   );
+      // }
       // is status is 'complete', update skybrowser with FileData and remove item from uploads
       setUploads((uploads) => {
         return uploads.filter((upload) => upload.id !== completedUpload.id);
@@ -193,14 +272,14 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
         break;
       }
     }
-    let skyfsPath = '/'; //Initial root directory
+    let skyfsPath = "/"; //Initial root directory
     const folderNames = folderChain?.map((folder) => folder.name);
     if (folderNames.length >= 1) {
-      skyfsPath = '/' + folderNames.join('/');
+      skyfsPath = "/" + folderNames.join("/");
     }
     console.log(`new skyfsPath -> ${skyfsPath}`);
-   setFolderPath(skyfsPath);
-   return skyfsPath;
+    setFolderPath(skyfsPath);
+    return skyfsPath;
   }, [currentFolderId, fileMap]);
 
   React.useEffect(() => {
@@ -300,7 +379,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
         moveFiles,
         setCurrentFolderId,
         uploads,
-        folderPath
+        folderPath,
       ]
     );
   };
@@ -330,25 +409,25 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       {...getRootProps()}
     >
       <Container
-        maxWidth="xl"
+        maxWidth="md"
         sx={{
           display: "flex",
           alignContent: "center",
           justifyContent: "center",
         }}
       >
-        <Grid container alignContent="center" justifyContent="center">
-          <Grid item lg={1} visibility="hidden">
+        <Grid container alignContent="center" justifyContent="center" lg={12} >
+          <Grid item lg={12} visibility="hidden">
             <input
               {...getInputProps()}
               ref={inputFilesRef}
-              accept="image/*"
+              accept="*/*"
               id="contained-button-file"
               multiple
               type="file"
             />
           </Grid>
-          <Grid item lg={12} sx={{ height: 500 }}>
+          <Grid item md={12} lg={12} sx={{ height: 500}}>
             <FullFileBrowser
               ref={fileBrowserRef}
               files={files}

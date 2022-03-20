@@ -8,7 +8,7 @@ import { MySky, SkynetClient } from "skynet-js";
 import { FileSystemDAC } from "fs-dac-library";
 // Initiate the SkynetClient
 //const portal = "https://skynetpro.net";
-const portal = "https://fileportal.org";
+const portal = "https://siasky.net";
 const client = new SkynetClient(portal);
 const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
 const dataDomain =  hostname === 'localhost' ? 'localhost' : 'skyspaces.hns'

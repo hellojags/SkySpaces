@@ -1,18 +1,27 @@
-import React, { createContext, useContext, useEffect } from 'react';
-import { DirectoryIndex, FileData } from 'fs-dac-library';
-import save from 'save-file';
-import { IFileSystemDACResponse } from 'fs-dac-library/dist/cjs/types';
-import { useSkynet } from '../skynet';
+import React, { createContext, useContext, useEffect } from "react";
+import { DirectoryIndex, FileData } from "fs-dac-library";
+import save from "save-file";
+import { IFileSystemDACResponse } from "fs-dac-library/dist/cjs/types";
+import { useSkynet } from "../skynet";
+import { path } from "path-browserify";
+import { FileWithPath } from "react-dropzone";
 type State = {
   createFile1: (
     directoryPath: string,
-    file: File,
+    file: FileWithPath,
     filename: string,
-    onProgress?: (progress: number) => void,
+    onProgress?: (progress: number) => void
   ) => Promise<any>;
-  uploadFileData: (file: File, fileName: string, onProgress?: (progress: number) => void) => Promise<FileData>; // It will return FileData object whihc contains SkyLink of uploaded data
+  uploadFileData: (
+    file: FileWithPath,
+    fileName: string,
+    onProgress?: (progress: number) => void
+  ) => Promise<FileData>; // It will return FileData object whihc contains SkyLink of uploaded data
   downloadFileData: (fileData: FileData, mimeType: string) => Promise<Blob>; // returns full binary file
-  createDirectory: (path: string, name: string) => Promise<IFileSystemDACResponse>; //directory is getting created and success or failure is returned
+  createDirectory: (
+    path: string,
+    name: string
+  ) => Promise<IFileSystemDACResponse>; //directory is getting created and success or failure is returned
   createFile: (
     directoryPath: string,
     name: string,
@@ -39,19 +48,60 @@ type Props = {
 
 export function FileManagerProvider({ children }: Props) {
   const { fileSystemDAC } = useSkynet();
+  const [directoryIndex, setDirectoryIndex] = React.useState([]);
+
   // On initial run, start initialization of MySky
   useEffect(() => {}, []);
+
+  const checkAndCreateDirectoryRecursively = async (
+    basePath: string,
+    relativePath: string
+  ): Promise<boolean> => {
+    const result: boolean = false;
+    const tempFoldersChain = relativePath.split("/");
+    const foldersChain = tempFoldersChain.slice(1, tempFoldersChain.length - 1);
+    let currentFolderBasePath = basePath;
+    for (const folderName of foldersChain) {
+      if (!directoryIndex.includes(`${currentFolderBasePath}/${folderName}`)) {
+        // must check for path, just foldername wont work.
+        //create directory using SkyFS
+        const status = await createDirectory(currentFolderBasePath, folderName);
+        if (status.success === true) {
+          // prepare absolute path
+          currentFolderBasePath = `${currentFolderBasePath}/${folderName}`;
+          directoryIndex.push(currentFolderBasePath);
+          console.log(
+            `Directory '${folderName}' created at path : ${currentFolderBasePath}`
+          );
+        } else {
+          console.log(
+            `** FAILED ** to create directory '${folderName}' at path : ${currentFolderBasePath}`
+          );
+        }
+      } else {
+        // prepare absolute path
+        currentFolderBasePath = `${currentFolderBasePath}/${folderName}`;
+        directoryIndex.push(currentFolderBasePath);
+      }
+    }
+    return result;
+  };
   // step1: uploadFileData -> FileData
   // step2: createFile
   const createFile1 = async (
     directoryPath: string,
-    file: File,
+    file: FileWithPath,
     filename: string,
-    onProgress?: (progress: number) => void,
+    onProgress?: (progress: number) => void
   ): Promise<any> => {
     try {
-      const fileData = await uploadFileData(file, file.name, onProgress);
-
+      const filewithpath: FileWithPath = file;
+      // Check if directory exist at a file path, if not create directory structure before uploading a file
+      await checkAndCreateDirectoryRecursively(
+        directoryPath,
+        filewithpath.path
+      );
+      const fileData = await uploadFileData(file, filename, onProgress);
       if (fileData) {
         // const directoryPath: string = "/localhost/SkynetHub";
         // const filename: string = "SkynetHub.txt";
@@ -64,23 +114,25 @@ export function FileManagerProvider({ children }: Props) {
         //   ts: 1633926778331,
         //   url: "sia://AAAvo7VYN3hgzKHIihw-kFi4j7PiC4qdlrjFog0r4SU-gw",
         // };
-        const status = await createFile(directoryPath, filename, fileData);
+        const tempAbsoluteFolderPath = directoryPath+filewithpath.path;
+        const absoluteFolderPath = tempAbsoluteFolderPath.substring(0, tempAbsoluteFolderPath.lastIndexOf(filename));
+        const status = await createFile(absoluteFolderPath, filename, fileData);
         if (status.success === true) {
           return fileData;
         } else {
-          return { success: false, error: 'createFile operation failed' };
+          return { success: false, error: "createFile operation failed" };
         }
       } else {
-        return { success: false, error: 'uploadFileData operation failed' };
+        return { success: false, error: "uploadFileData operation failed" };
       }
     } catch (e) {
       return { success: false, error: e.getMessage };
     }
   };
   const uploadFileData = async (
-    file: File,
+    file: FileWithPath,
     fileName: String,
-    onProgress?: (progress: number) => void,
+    onProgress?: (progress: number) => void
   ): Promise<FileData> => {
     // const file: File = new File(["Sample Skynet Data!"], "filename.txt", {
     //   type: "text/plain",
@@ -98,7 +150,10 @@ export function FileManagerProvider({ children }: Props) {
     return fileData;
   };
 
-  const downloadFileData = async (fileData: FileData, mimeType: string): Promise<Blob> => {
+  const downloadFileData = async (
+    fileData: FileData,
+    mimeType: string
+  ): Promise<Blob> => {
     // const fileData: FileData = {
     //   size: 23,
     //   chunkSize: 16777216,
@@ -119,15 +174,20 @@ export function FileManagerProvider({ children }: Props) {
     // };
     //const mimeType: string = "txt";
     console.log(`-> downloadFileData : start`);
-    console.log(`downloadFileData : fileData Object -> ${JSON.stringify(fileData)}`);
+    console.log(
+      `downloadFileData : fileData Object -> ${JSON.stringify(fileData)}`
+    );
     const file: Blob = await fileSystemDAC.downloadFileData(fileData, mimeType);
     console.log(`downloadFileData : file.size -> ${file?.size}`);
-    await save(file, 'test.txt');
+    await save(file, "test.txt");
     console.log(`<- downloadFileData : End`);
     return file;
   };
 
-  const createDirectory = async (path: string, name: string): Promise<IFileSystemDACResponse> => {
+  const createDirectory = async (
+    path: string,
+    name: string
+  ): Promise<IFileSystemDACResponse> => {
     console.log(`-> createDirectory : start`);
     // const path: string = "/localhost/";
     // const name: string = "SkynetHub";
@@ -155,8 +215,16 @@ export function FileManagerProvider({ children }: Props) {
     //   ts: 1633844173248,
     //   url: "sia://AAC9eHtFMyl5rpn4wSuxqTVg7CsDbDSlB7AiFE0rIvC0nw",
     // };
-    console.log(`createFile : ${directoryPath} ${name} ${fileData}`);
-    const response = await fileSystemDAC.createFile(directoryPath, name, fileData);
+    console.log(
+      `createFile : ${directoryPath} ${name} , fileData: ${JSON.stringify(
+        fileData
+      )}`
+    );
+    const response = await fileSystemDAC.createFile(
+      directoryPath,
+      name,
+      fileData
+    );
     console.log(`createFile :  response -> ${JSON.stringify(response)}`);
     console.log(`<- createFile : End`);
     return response;
@@ -180,7 +248,11 @@ export function FileManagerProvider({ children }: Props) {
     //   url: "sia://AACoTK1V_3mvnA-2vmVrU621vTI0zZiS2eg71vtoh0MEZQ",
     // };
     console.log(`updateFile : ${directoryPath} ${name} ${fileData}`);
-    const response = await fileSystemDAC.updateFile(directoryPath, name, fileData);
+    const response = await fileSystemDAC.updateFile(
+      directoryPath,
+      name,
+      fileData
+    );
     console.log(`updateFile : response -> ${JSON.stringify(response)}`);
     console.log(`<- updateFile : End`);
     return response;
@@ -191,7 +263,11 @@ export function FileManagerProvider({ children }: Props) {
     //const path: string = "/localhost/SkynetHub";
     console.log(`getDirectoryIndex : ${path}`);
     const rootDirectoryIndex = await fileSystemDAC.getDirectoryIndex(path);
-    console.log(`getDirectoryIndex : rootDirectoryIndex -> ${JSON.stringify(rootDirectoryIndex)}`);
+    console.log(
+      `getDirectoryIndex : rootDirectoryIndex -> ${JSON.stringify(
+        rootDirectoryIndex
+      )}`
+    );
     console.log(`<- getDirectoryIndex : End`);
     return rootDirectoryIndex;
   };
@@ -214,7 +290,11 @@ export function FileManagerProvider({ children }: Props) {
     createFile,
     updateFile,
     getDirectoryIndex,
-    shareDirectory
+    shareDirectory,
   };
-  return <FileManagerContext.Provider value={value}>{children}</FileManagerContext.Provider>;
+  return (
+    <FileManagerContext.Provider value={value}>
+      {children}
+    </FileManagerContext.Provider>
+  );
 }

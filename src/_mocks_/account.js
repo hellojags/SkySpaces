@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------------
 
 const account = {
-  displayName: 'Jaydon Frankie',
-  email: 'demo@minimals.cc',
+  displayName: 'Crypto Rocket',
+  email: 'skynethub.io@gmail.com',
   photoURL: '/static/mock-images/avatars/avatar_default.jpg'
 };
 
