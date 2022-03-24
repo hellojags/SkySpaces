@@ -10,6 +10,7 @@ import Scrollbar from '../../components/Scrollbar';
 import NavSection from '../../components/NavSection';
 import { MHidden } from '../../components/@material-extend';
 //
+import { Icon } from '@iconify/react';
 import sidebarConfig from './SidebarConfig';
 import account from '../../_mocks_/account';
 
@@ -81,7 +82,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
 
       <NavSection navConfig={sidebarConfig} />
 
-      <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
+      <Box sx={{ px: 0, pb: 3, mt: 10 }}>
         <Stack
           alignItems="center"
           spacing={3}
@@ -98,7 +99,17 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             src="/static/illustrations/illustration_avatar.png"
             sx={{ width: 100, position: 'absolute', top: -50 }}
           /> */}
-
+          <Box>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Get 100GB of storage for all your files and photos.
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }} gutterBottom paddingBottom={2}>
+              <a href="#">Learn more about storage plans.</a>
+            </Typography>
+            <Button fullWidth variant="outlined" startIcon={<Icon icon="cil:diamond" />}>
+              Buy Storage
+            </Button>
+          </Box>
           <Box sx={{ textAlign: 'center' }}>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             In-Progress Counts

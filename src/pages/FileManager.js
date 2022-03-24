@@ -32,6 +32,7 @@ import USERLIST from '../_mocks_/user';
 import { SkyBrowser } from '../components/skybrowser/SkyBrowser';
 import { MySky } from "../components/mysky/MySky";
 import {useSkynet} from "../contexts/skynet"
+import ActionHeader from '../components/ActionHeader';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -137,6 +138,7 @@ export default function FileManager() {
 
   return (
     <Page title="FilesManager | Minimal-UI" >
+        <ActionHeader />
       <Container>
         <MySky></MySky>
         <Card>
