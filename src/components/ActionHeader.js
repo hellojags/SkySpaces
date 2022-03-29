@@ -1,121 +1,107 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import { Card, Box, Stack, IconButton, ListItemIcon, ListItemText, Grid } from "@mui/material";
-import Toolbar from '@material-ui/core/Toolbar';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import React, {useEffect} from "react";
+import { IconButton, ListItem, Grid, Chip, Paper,Toolbar, MenuItem, Button, Menu, Fade, Drawer, Divider } from "@mui/material";
 import { Icon } from '@iconify/react';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-/* import { makeStyles } from '@material-ui/core/styles'; */
-import { createStyles, makeStyles } from '@mui/styles';
+import { createTheme, styled, useTheme } from '@mui/material/styles';
+import { makeStyles } from '@material-ui/core/styles';
+import MenuButton from './MenuButton';
+/* import { createStyles, makeStyles } from '@mui/styles'; */
 
-
-const LeftAlignButtonStyle = styled('div')(({ theme }) => ({
-    display: 'inline-flex',
-    alignItems: 'left',
-    border: '0'
-  }));
-const RightAlignButtonStyle = styled('div')(({ theme }) => ({
-    display: 'inline-flex',
-    alignItems: 'right',
-    border: '0'
-  }));
   const useStyles = makeStyles((theme) => ({
     right: {
       marginLeft: 'auto'
+    },
+    toolbarCss: {
+        width: '100%',
+        borderBottom: '1px solid #ccc',
+        borderTop: '1px solid #ccc'
     }
   }));
-  const theme = createTheme();
-export function ActionHeader() {
+  const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-start',
+  }));
+  const drawerWidth = 300;
+  
+export function ActionHeader(props) {
+    const theme = useTheme();
     const classes = useStyles();
-  const [age, setAge] = React.useState('');
+    const handleClick = (clickedChip) => {
+        console.log(clickedChip);
+    };
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
+  const handleDrawerOpen = () => {
+      props.parentCallBack(true);
   };
+    const [inMyFiles, setInMyFiles] = React.useState(false);
+    const [inPhotos, setInPhotos] = React.useState(false);
+    const [selected, setSelected] = React.useState(true);
+    const [selectedChip, setSelectedChip] = React.useState(0);
+    const [chipData, setChipData] = React.useState([
+        { key: 0, label: 'All Photos' },
+        { key: 1, label: 'Albums' },
+        { key: 2, label: 'Tags' },
+        { key: 3, label: 'Places' },
+      ]);
+    
   return (
-      <Toolbar sx={{ mt: 2 }}>
-        <Grid container alignItems="center" sx={{ width: 300 }}>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 85 }}>
-                <InputLabel id="demo-simple-select-standard-label">
-                    <Icon icon="ic:outline-add" /> 
-                    <span>New</span>
-                </InputLabel>
-                <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={age}
-                onChange={handleChange}
-                label="Age"
-                disableUnderline
-                >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-            </FormControl>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 100 }}>
-                <InputLabel id="demo-simple-select-standard-label">
-                    <Icon icon="charm:upload"/>
-                    <span>Upload</span>
-                </InputLabel>
-                <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={age}
-                onChange={handleChange}
-                label="Age"
-                disableUnderline
-                >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-            </FormControl>
-        </Grid>
+      <Toolbar className={classes.toolbarCss} disableGutters={true} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        {inMyFiles && 
+        <Grid sx={{ width: '50%' }}>
+            <Button sx={{color: '#00AB55'}}><Icon icon="ic:outline-add" /> New Folder</Button>
+            <MenuButton buttonName="Upload" items={['Files', 'Folder', 'Web App']}/>
+        </Grid>}
+        {selected && 
+            <Grid>
+                <Button startIcon={<Icon icon="fa6-regular:share-from-square" />}>Share</Button>
+                <Button startIcon={<Icon icon="bi:trash" />}>Delete</Button>
+                <Button startIcon={<Icon icon="carbon:folder-move-to" />}>Move to</Button>
+                <Button startIcon={<Icon icon="cil:copy" />}>Copy to</Button>
+                <Button startIcon={<Icon icon="bx:rename" />}>Rename</Button>
+                <Button startIcon={<Icon icon="cil:library" />}>Create album from folder</Button>
+                <Button startIcon={<Icon icon="icomoon-free:embed2" />}>Embed</Button>
+            </Grid>
+        }
+        {inPhotos && 
+        <Paper
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                listStyle: 'none',
+                p: 0.5,
+                m: 0,
+            }}
+            component="ul"
+            >
+            {chipData.map((data) => {
+                return (
+                <ListItem key={data.key} sx={{width: 'auto'}} onClick={handleClick(data.key)}>
+                    <Chip
+                    label={data.label}
+                    variant={data.key === selectedChip ? "" : 'outlined'}
+                    />
+                </ListItem>
+                );
+            })}
+        </Paper>}
+        {(inMyFiles || selected) && 
         <Grid className={classes.right}>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 85 }}>
-                <InputLabel id="demo-simple-select-standard-label">
-                    <Icon icon="fluent:arrow-sort-down-lines-24-regular"/>
-                    <span>Sort</span>
-                </InputLabel>
-                <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={age}
-                onChange={handleChange}
-                label="Age"
-                disableUnderline
-                >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-            </FormControl>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 85 }}>
-                <InputLabel id="demo-simple-select-standard-label">
-                    <Icon icon="fluent:list-20-filled"/>
-                    <span>List</span>
-                </InputLabel>
-                <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={age}
-                onChange={handleChange}
-                label="Age"
-                disableUnderline
-                >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-            </FormControl>
-            <IconButton aria-label="delete" sx={{ mt: 2 }}> 
+            {!selected && 
+                <MenuButton buttonName="Sort" items={['Name', 'Modified', 'File Size']} order={['Ascending', 'Descending']}/>
+            }
+            {selected && 
+                <Button startIcon={<Icon icon="iconoir:cancel" />}>1 selected</Button> 
+            }
+            <MenuButton buttonName="List" items={['List', 'Tiles']}/>
+            <IconButton aria-label="info" sx={{color: '#00AB55'}} onClick={handleDrawerOpen} > 
                 <Icon icon="bytesize:info" />
             </IconButton>
-        </Grid>
+        </Grid>}
+        
       </Toolbar>
   );
 }

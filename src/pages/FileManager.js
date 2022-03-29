@@ -1,7 +1,7 @@
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 // material
@@ -33,6 +33,7 @@ import { SkyBrowser } from '../components/skybrowser/SkyBrowser';
 import { MySky } from "../components/mysky/MySky";
 import {useSkynet} from "../contexts/skynet"
 import ActionHeader from '../components/ActionHeader';
+import InfoDrawer from '../components/InfoDrawer';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -76,6 +77,15 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function FileManager() {
+  const [openDrawer, setOpenDrawer] = React.useState(false);
+    const handleCallbackFromAction = (childDataForDrawer) => {
+      setOpenDrawer(childDataForDrawer);
+      console.log(openDrawer);
+    }
+    const onClose = () => {
+      setOpenDrawer(false);
+      console.log(openDrawer);
+    }
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -138,8 +148,9 @@ export default function FileManager() {
 
   return (
     <Page title="FilesManager | Minimal-UI" >
-        <ActionHeader />
-      <Container>
+      <ActionHeader parentCallBack={handleCallbackFromAction} />
+      <Container sx={{position: 'relative'}}>
+        <InfoDrawer open={openDrawer} onClose={onClose}/>
         <MySky></MySky>
         <Card>
           {loggedIn ? <SkyBrowser /> : "loading..." }
