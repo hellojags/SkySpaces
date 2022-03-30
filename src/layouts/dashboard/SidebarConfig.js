@@ -22,7 +22,7 @@ const sidebarConfig = [
   },
   {
     title: 'Photos',
-    path: '/dashboard/FilesManager',
+    path: '/dashboard/photos',
     icon: getIcon(imageOutline)
   },
   {
