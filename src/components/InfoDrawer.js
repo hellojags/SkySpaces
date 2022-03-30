@@ -30,28 +30,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   }));
   const drawerWidth = 300;
 
- /*  const Puller = styled(Box)(({ theme }) => ({
-    width: 30,
-    height: 6,
-    borderRadius: 3,
-    background: '#00AB55',
-    top: 100,
-    left: 'calc(50% - 15px)',
-  }));
- */
 export function InfoDrawer({open, onClose}) {
     const [toggleMore, setToggleMore] = useState(false)
     const theme = useTheme();
     const classes = useStyles();
-    /* const [open, setOpen] = useState(props.open);
-
-    useEffect(() => {
-        setOpen(props.open);
-      }, [props.open]);
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    }; */
     return (
         <Drawer
             sx={{

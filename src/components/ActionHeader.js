@@ -13,18 +13,10 @@ import MenuButton from './MenuButton';
     toolbarCss: {
         width: '100%',
         borderBottom: '1px solid #ccc',
-        borderTop: '1px solid #ccc'
+        borderTop: '1px solid #ccc',
+        zIndex: 1099
     }
   }));
-  const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-start',
-  }));
-  const drawerWidth = 300;
   
 export function ActionHeader(props) {
     const theme = useTheme();
@@ -36,9 +28,9 @@ export function ActionHeader(props) {
   const handleDrawerOpen = () => {
       props.parentCallBack(true);
   };
-    const [inMyFiles, setInMyFiles] = React.useState(false);
+    const [inMyFiles, setInMyFiles] = React.useState(true);
     const [inPhotos, setInPhotos] = React.useState(false);
-    const [selected, setSelected] = React.useState(true);
+    const [selected, setSelected] = React.useState(false);
     const [selectedChip, setSelectedChip] = React.useState(0);
     const [chipData, setChipData] = React.useState([
         { key: 0, label: 'All Photos' },
