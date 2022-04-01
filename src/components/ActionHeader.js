@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import { IconButton, ListItem, Grid, Chip, Paper,Toolbar, MenuItem, Button, Menu, Fade, Drawer, Divider } from "@mui/material";
 import { Icon } from '@iconify/react';
 import { createTheme, styled, useTheme } from '@mui/material/styles';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import MenuButton from './MenuButton';
 /* import { createStyles, makeStyles } from '@mui/styles'; */
 
