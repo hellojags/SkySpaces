@@ -13,13 +13,32 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  FormControlLabel
+  FormControlLabel,
+  Grid,
+  Typography
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { createTheme, styled, useTheme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
 // ----------------------------------------------------------------------
 
+const useStyles = makeStyles((theme) => ({
+  login: {
+    border: '1px solid #ccc',
+    padding: '70px',
+    boxShadow: '0px 0px 23px 1px rgba(0,0,0,0.75)',
+    ['@media (min-width: 660px)']: {
+      border: '1px solid #ccc',
+      padding: '110px',
+      boxShadow: '0px 0px 23px 1px rgba(0,0,0,0.75)'
+    }
+  }
+}));
+
 export default function LoginForm() {
+  const theme = useTheme();
+  const classes = useStyles();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -47,60 +66,22 @@ export default function LoginForm() {
   };
 
   return (
-    <FormikProvider value={formik}>
-      <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          <TextField
+    <Stack>
+      <Grid className={classes.login}>
+        <Typography variant="h3" gutterBottom component="div">
+            Own Your Space
+          </Typography>
+          <LoadingButton
             fullWidth
-            autoComplete="username"
-            type="email"
-            label="Email address"
-            {...getFieldProps('email')}
-            error={Boolean(touched.email && errors.email)}
-            helperText={touched.email && errors.email}
-          />
-
-          <TextField
-            fullWidth
-            autoComplete="current-password"
-            type={showPassword ? 'text' : 'password'}
-            label="Password"
-            {...getFieldProps('password')}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleShowPassword} edge="end">
-                    <Icon icon={showPassword ? eyeFill : eyeOffFill} />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-            error={Boolean(touched.password && errors.password)}
-            helperText={touched.password && errors.password}
-          />
-        </Stack>
-
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-          <FormControlLabel
-            control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
-            label="Remember me"
-          />
-
-          <Link component={RouterLink} variant="subtitle2" to="#">
-            Forgot password?
-          </Link>
-        </Stack>
-
-        <LoadingButton
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-          loading={isSubmitting}
-        >
-          Login
-        </LoadingButton>
-      </Form>
-    </FormikProvider>
+            size="large"
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            Login Using MySky
+          </LoadingButton>
+      </Grid>
+    </Stack>
   );
+
 }
