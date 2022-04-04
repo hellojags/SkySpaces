@@ -14,7 +14,7 @@ import ms from 'ms';
 import Link from '@mui/material/Link';
 import { useFileManager } from '../../contexts';
 import { useSkynetManager } from '../../contexts';
-import { ChonkyIconName } from 'chonky';
+import { ChonkyIconName } from '@skynethubio/web3-file-explorer';
 
 const getFilePath = (file) => file.webkitRelativePath || file.path || file.name;
 const getRelativeFilePath = (file) => {

@@ -24,8 +24,8 @@ import {
   FileHelper,
   FullFileBrowser,
   setChonkyDefaults,
-} from "chonky";
-import { ChonkyIconFA } from "chonky-icon-fontawesome";
+} from "@skynethubio/web3-file-explorer";
+import { ChonkyIconFA } from "@skynethubio/web3-file-explorer-icons";
 import { useFileManager } from "../../contexts";
 import { useSkynetManager } from "../../contexts";
 
@@ -408,49 +408,40 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       }}
       {...getRootProps()}
     >
-      <Container
-        maxWidth="md"
-        sx={{
-          display: "flex",
-          alignContent: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Grid container alignContent="center" justifyContent="center" lg={12} >
-          <Grid item lg={12} visibility="hidden">
-            <input
-              {...getInputProps()}
-              ref={inputFilesRef}
-              accept="*/*"
-              id="contained-button-file"
-              multiple
-              type="file"
-            />
-          </Grid>
-          <Grid item md={12} lg={12} sx={{ height: 500}}>
-            <FullFileBrowser
-              ref={fileBrowserRef}
-              files={files}
-              folderChain={folderChain}
-              fileActions={customFileActions}
-              onFileAction={handleFileAction}
-              thumbnailGenerator={thumbnailGenerator}
-              darkMode={false}
-              defaultFileViewActionId={"enable_list_view"}
-              {...props}
-            />
-          </Grid>
-          <Grid item lg={12} sx={{ height: 500 }}>
-            {uploads.map((upload) => (
-              <UploaderElement
-                key={upload.id}
-                upload={upload}
-                folderPath={folderPath}
-              />
-            ))}
-          </Grid>
+     <Grid container alignContent="center" justifyContent="center" lg={12}>
+        <Grid item lg={12} visibility="hidden">
+          <input
+            {...getInputProps()}
+            ref={inputFilesRef}
+            accept="*/*"
+            id="contained-button-file"
+            multiple
+            type="file"
+          />
         </Grid>
-      </Container>
+        <Grid item md={12} lg={12} sx={{ height: 400 }}>
+          <FullFileBrowser
+            ref={fileBrowserRef}
+            files={files}
+            folderChain={folderChain}
+            fileActions={customFileActions}
+            onFileAction={handleFileAction}
+            thumbnailGenerator={thumbnailGenerator}
+            darkMode={false}
+            defaultFileViewActionId={"enable_list_view"}
+            {...props}
+          />
+        </Grid>
+        <Grid item lg={12} sx={{ display: "flex" }}>
+        {uploads.map((upload) => (
+          <UploaderElement
+            key={upload.id}
+            upload={upload}
+            folderPath={folderPath}
+          />
+        ))}
+      </Grid>
+      </Grid>
     </Box>
   );
 });

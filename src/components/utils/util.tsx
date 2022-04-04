@@ -1,5 +1,5 @@
-import Button from '@material-ui/core/Button';
-import { ChonkyActions, ChonkyFileActionData } from 'chonky';
+import {Button} from '@mui/material';
+import { ChonkyActions, ChonkyFileActionData } from '@skynethubio/web3-file-explorer';
 import Noty from 'noty';
 import 'noty/lib/noty.css';
 import 'noty/lib/themes/relax.css';

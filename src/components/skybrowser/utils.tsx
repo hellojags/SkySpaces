@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 
-import { ChonkyIconName } from "chonky";
+import { ChonkyIconName } from "@skynethubio/web3-file-explorer";
 export const convert2ChonkyFileData = (upload, isDirectory): any => {
   console.log(`convert2ChonkyFileData: upload : ${JSON.stringify(upload)}`);
   let chonkyCustomFileData = null;
