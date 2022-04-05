@@ -147,13 +147,13 @@ export default function FileManager() {
   const isUserNotFound = filteredUsers.length === 0;
 
   return (
-    <Page title="FilesManager | Minimal-UI" >
+    <Page title="SkySpaces" >
       <ActionHeader parentCallBack={handleCallbackFromAction} />
       <Container sx={{position: 'relative'}}>
         <InfoDrawer open={openDrawer} onClose={onClose}/>
-        <MySky></MySky>
-        <Card>
-          {loggedIn ? <SkyBrowser /> : "loading..." }
+        {/* <MySky></MySky> */}
+        <Card sx={{mt: 2}}>
+          {loggedIn ? <SkyBrowser /> : <Stack>loading...</Stack> }
         </Card>
       </Container>
     </Page>

@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
 // material
@@ -17,7 +17,7 @@ import {
 import { LoadingButton } from '@mui/lab';
 import { createTheme, styled, useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
-import {useSkynet} from "../../../contexts";
+import { useSkynet } from "../../../contexts";
 
 // ----------------------------------------------------------------------
 
@@ -46,11 +46,16 @@ export default function LoginForm() {
     password: Yup.string().required('Password is required')
   });
 
-  const loginHandler =  async () => {
+  const loginHandler = async () => {
     await login();
     console.log(userID, loggedIn);
   }
 
+  useEffect(() => {
+    if (loggedIn && userID !== undefined && userID !== null) {
+      navigate('/home/filemanager', { replace: true });
+    }
+  }, [loggedIn]);
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -59,7 +64,7 @@ export default function LoginForm() {
     },
     validationSchema: LoginSchema,
     onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+      navigate('/home/', { replace: true });
     }
   });
 
@@ -73,18 +78,18 @@ export default function LoginForm() {
     <Stack>
       <Grid className={classes.login}>
         <Typography variant="h3" gutterBottom component="div">
-            Own Your Space
-          </Typography>
-          <LoadingButton
-            fullWidth
-            size="large"
-            type="button"
-            variant="contained"
-            loading={isSubmitting}
-            onClick={loginHandler}
-          >
-            Login Using MySky
-          </LoadingButton>
+          Own Your Space
+        </Typography>
+        <LoadingButton
+          fullWidth
+          size="large"
+          type="button"
+          variant="contained"
+          loading={isSubmitting}
+          onClick={loginHandler}
+        >
+          Login Using MySky
+        </LoadingButton>
       </Grid>
     </Stack>
   );

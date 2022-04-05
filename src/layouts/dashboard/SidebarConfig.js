@@ -12,27 +12,27 @@ const getIcon = (name) => <Icon icon={name} width={22} height={22} />;
 const sidebarConfig = [
   {
     title: 'My Files',
-    path: '/dashboard/FilesManager', 
+    path: '/home/filemanager', 
     icon: getIcon(folderOutline)
   },
   {
     title: 'Recent',
-    path: '/dashboard/user',
+    path: '/home/user',
     icon: getIcon(historyOutline)
   },
   {
     title: 'Photos',
-    path: '/dashboard/photos',
+    path: '/home/photos',
     icon: getIcon(imageOutline)
   },
   {
     title: 'Shared',
-    path: '/dashboard/products',
+    path: '/home/products',
     icon: getIcon(peopleOutline)
   },
   {
     title: 'Recycle bin',
-    path: '/dashboard/blog',
+    path: '/home/blog',
     icon: getIcon(trash2Outline)
   }
 ];

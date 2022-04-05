@@ -50,10 +50,12 @@ export default function AccountPopover() {
     setOpen(false);
   };
 
-  const logoutHandler = () => {
-    logout();
+  const logoutHandler = async () => {
+    await logout();
     handleClose();
     navigate('/login', { replace: true });
+    // TODO: cleanup in-progress upload before logout.
+    // setUploads([]) or null or empty
   }
 
   return (
