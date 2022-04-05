@@ -2,9 +2,6 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { Icon } from '@iconify/react';
-import eyeFill from '@iconify/icons-eva/eye-fill';
-import eyeOffFill from '@iconify/icons-eva/eye-off-fill';
 // material
 import {
   Link,
@@ -20,6 +17,7 @@ import {
 import { LoadingButton } from '@mui/lab';
 import { createTheme, styled, useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
+import {useSkynet} from "../../../contexts";
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LoginForm() {
+  const { login, logout, loggedIn, userID } = useSkynet();
   const theme = useTheme();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -46,6 +45,11 @@ export default function LoginForm() {
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
     password: Yup.string().required('Password is required')
   });
+
+  const loginHandler =  async () => {
+    await login();
+    console.log(userID, loggedIn);
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -74,9 +78,10 @@ export default function LoginForm() {
           <LoadingButton
             fullWidth
             size="large"
-            type="submit"
+            type="button"
             variant="contained"
             loading={isSubmitting}
+            onClick={loginHandler}
           >
             Login Using MySky
           </LoadingButton>

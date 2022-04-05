@@ -9,7 +9,8 @@ export function MenuButton(props) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (event) => {
+    console.log('dropdown button from action header called', event.currentTarget.innerText);
     setAnchorEl(null);
   };
   let startIcon = <Icon icon="charm:upload" />;

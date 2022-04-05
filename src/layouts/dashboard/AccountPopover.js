@@ -12,6 +12,9 @@ import MenuPopover from '../../components/MenuPopover';
 //
 import account from '../../_mocks_/account';
 
+import { useSkynet } from '../../contexts';
+import { useNavigate } from 'react-router-dom';
+
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
@@ -35,6 +38,8 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const { login, logout, loggedIn, userID } = useSkynet();
+  const navigate = useNavigate();
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
 
@@ -44,6 +49,12 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const logoutHandler = () => {
+    logout();
+    handleClose();
+    navigate('/login', { replace: true });
+  }
 
   return (
     <>
@@ -110,7 +121,7 @@ export default function AccountPopover() {
         ))}
 
         <Box sx={{ p: 2, pt: 1.5 }}>
-          <Button fullWidth color="inherit" variant="outlined">
+          <Button fullWidth color="inherit" variant="outlined" onClick={logoutHandler}>
             Logout
           </Button>
         </Box>
