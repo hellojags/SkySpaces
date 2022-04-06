@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
 // material
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton, Button, Modal, Card, CardHeader } from '@mui/material';
+import { Box, Stack, AppBar, Toolbar, IconButton, Button, Modal, Card, CardHeader, CardContent, Typography } from '@mui/material';
 // components
 import { MHidden } from '../../components/@material-extend';
 //
@@ -57,7 +57,7 @@ DashboardNavbar.propTypes = {
 const styles = makeStyles((theme) => ({
   modalStyle1:{
     overflow:'auto',
-    height: '-webkit-fill-available',
+    maxHeight: 500,
     width: '80%',
     ['@media (min-width: 992px)']: {
       width: '60%'
@@ -83,9 +83,9 @@ export default function DashboardNavbar({ onOpenSidebar }) {
 
         <Searchbar />
         <Box sx={{ flexGrow: 1 }} />
-        <Button variant="outlined" onClick={handleOpen}>
+        {uploads.length !== 0 && <Button variant="outlined" onClick={handleOpen}>
           Uploading {uploads.length} items
-        </Button>
+        </Button>}
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           <LanguagePopover />
           <NotificationsPopover />
@@ -102,6 +102,15 @@ export default function DashboardNavbar({ onOpenSidebar }) {
           <CardHeader title="Progress" />
         {/* <Card>
         </Card> */}
+        {uploads.length === 0 && 
+          <Card>
+            <CardContent>
+              <Typography>
+                Currently no upload is in progress.
+              </Typography>
+            </CardContent>
+          </Card>
+        }
         {uploads.map((upload) => (
           <UploaderElement
           key={upload.id}

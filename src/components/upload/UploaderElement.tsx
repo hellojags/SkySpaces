@@ -191,8 +191,8 @@ export default function UploaderElement({ upload, folderPath }) {
                         <span className={classnames({ hidden: !copied })}>Copied</span>
                       </Button>)}
                   </Typography>
-                  {(upload.status === 'enqueued' || upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <LinearProgress color="success" variant="determinate" value={Math.floor(upload.progress * 100)}/>}
-                  {upload.status === 'complete' && <LinearProgress color="success" />}
+                  {(upload.status === 'enqueued' || upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <LinearProgress color="success" />}
+                  {upload.status === 'complete' && <LinearProgress color="success" variant="determinate" value={100} />}
                   {upload.status === 'error' && <LinearProgress color="success" variant="determinate" value={0} />}
                 </ListItemText>
               </ListItemButton>
