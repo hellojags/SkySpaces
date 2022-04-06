@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
 // material
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton, Button, Modal, Typography } from '@mui/material';
+import { Box, Stack, AppBar, Toolbar, IconButton, Button, Modal, Card, CardHeader } from '@mui/material';
 // components
 import { MHidden } from '../../components/@material-extend';
 //
@@ -44,11 +44,9 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
-  p: 4,
 };
 
 // ----------------------------------------------------------------------
@@ -58,8 +56,12 @@ DashboardNavbar.propTypes = {
 };
 const styles = makeStyles((theme) => ({
   modalStyle1:{
-    overflow:'scroll',
-    height:'100%',
+    overflow:'auto',
+    height: '-webkit-fill-available',
+    width: '80%',
+    ['@media (min-width: 992px)']: {
+      width: '60%'
+    }
   }
 }));
 
@@ -97,6 +99,9 @@ export default function DashboardNavbar({ onOpenSidebar }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style} className={classes.modalStyle1}>
+          <CardHeader title="Progress" />
+        {/* <Card>
+        </Card> */}
         {uploads.map((upload) => (
           <UploaderElement
           key={upload.id}

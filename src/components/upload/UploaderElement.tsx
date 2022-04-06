@@ -15,7 +15,21 @@ import Link from '@mui/material/Link';
 import { useFileManager } from '../../contexts';
 import { useSkynetManager } from '../../contexts';
 import { ChonkyIconName } from '@skynethubio/web3-file-explorer';
-import { Typography, CircularProgress, ListItemText, Button, Stack, ListItemIcon, styled, Paper } from '@mui/material';
+import { 
+  Typography, 
+  CircularProgress,
+  ListItemText, 
+  Button, 
+  Stack, 
+  ListItemIcon, 
+  styled, 
+  Paper, 
+  ListItemButton, 
+  LinearProgress, 
+  Card,
+  CardHeader,
+  CardContent } from '@mui/material';
+import { Icon } from '@iconify/react';
 
 const getFilePath = (file) => file.webkitRelativePath || file.path || file.name;
 const getRelativeFilePath = (file) => {
@@ -58,20 +72,20 @@ const createUploadErrorMessage = (error) => {
 //const client = new SkynetClient("https://skynetpro.net");
 const client = new SkynetClient("https://siasky.net");
 
-  //export default function UploaderElement({upload}) {
-  export default function UploaderElement({upload,folderPath}) {
-    const Item = styled(Paper)(({ theme }) => ({
-      backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-      ...theme.typography.body2,
-      padding: theme.spacing(1),
-      textAlign: 'center',
-      color: theme.palette.text.secondary,
-    }));
+//export default function UploaderElement({upload}) {
+export default function UploaderElement({ upload, folderPath }) {
+  const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  }));
   const [copied, setCopied] = React.useState(false);
   const [, , reset] = useTimeoutFn(() => setCopied(false), ms('3 seconds'));
   const [retryTimeout, setRetryTimeout] = React.useState(ms('3 seconds')); // retry delay after "429: TOO_MANY_REQUESTS"
   const { createFile1 } = useFileManager();
-  const {uploads, onUploadStateChange} = useSkynetManager();
+  const { uploads, onUploadStateChange } = useSkynetManager();
   const handleCopy = (url) => {
     copy(url);
     setCopied(true);
@@ -79,9 +93,9 @@ const client = new SkynetClient("https://siasky.net");
   };
   React.useEffect(() => {
     if (upload.status === 'uploading' && !upload.startedTime) {
-      onUploadStateChange(upload.id, {startedTime: Date.now()});
+      onUploadStateChange(upload.id, { startedTime: Date.now() });
       (async () => {
-        const onUploadProgress = (progress : number ) => {
+        const onUploadProgress = (progress: number) => {
           const status = progress === 1 ? 'processing' : 'uploading';
           onUploadStateChange(upload.id, { status, progress });
         };
@@ -93,21 +107,21 @@ const client = new SkynetClient("https://siasky.net");
               (acc, file) => ({ ...acc, [getRelativeFilePath(file)]: file }),
               {}
             );
-            console.log('Directory -->'+JSON.stringify(directory))
+            console.log('Directory -->' + JSON.stringify(directory))
             const name = encodeURIComponent(upload.name);
             //response = await client.uploadDirectory(directory, name,{onUploadProgress});
             //response = await createFile1("/localhost/",upload.file,upload.file.name,onUploadProgress);
-            response = await createFile1(folderPath,directory,name,onUploadProgress);
+            response = await createFile1(folderPath, directory, name, onUploadProgress);
           } else {
             //response = await client.uploadFile(upload.file, { onUploadProgress });
-            response = await createFile1(folderPath,upload.file,upload.file.name,onUploadProgress);
+            response = await createFile1(folderPath, upload.file, upload.file.name, onUploadProgress);
           }
           const url = await client.getSkylinkUrl(response.url, {
             subdomain: upload.mode === 'directory'
           });
           // We get result that means file is uploaded successfully.
           // TODO: check result object for success
-          onUploadStateChange(upload.id, { status: 'complete', url , fileData: response});
+          onUploadStateChange(upload.id, { status: 'complete', url, fileData: response });
           //onUploadComplete(upload.id);
           console.log("Upload Size " + uploads?.length);
         } catch (error) {
@@ -134,68 +148,72 @@ const client = new SkynetClient("https://siasky.net");
   }, [onUploadStateChange, upload, retryTimeout]);
 
   return (
-      <Stack spacing={2}>
-        <Item>
-          <ListItemIcon>
-            {upload.status === 'enqueued' &&  <CircularProgress />}
-            {upload.status === 'retrying' && <CircularProgress />}
-            {upload.status === 'uploading' && <CircularProgress />}
-            {upload.status === 'processing' && <CircularProgress />}
-            {upload.status === 'complete' && <CircularProgress />}
-            {upload.status === 'error' && <CircularProgress />}
-          </ListItemIcon>
-          <ListItemText>
+    <Card sx={{borderRadius: 0}}>
+        <CardContent sx={{padding: 0}}>
+            <Item>
+              <ListItemButton>
+                <ListItemIcon>
+                  {(upload.status === 'enqueued' || upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <CircularProgress />}
+                  {upload.status === 'complete' && <Icon icon="clarity:happy-face-line" color="green" width="40" height="40" />}
+                  {upload.status === 'error' && <Icon icon="iconoir:emoji-sad" width="40" height="40" />}
+                </ListItemIcon>
+                <ListItemText>
+                  <Typography variant="body2" color="text.secondary">
+                    {upload.status === 'uploading' && (
+                      <span>Uploading {bytes(upload.file.size * upload.progress)} of {bytes(upload.file.size)}</span>
+                    )}
+                    {upload.status === 'enqueued' && (<span>Upload in queue, please wait</span>)}
+                    {upload.status === 'processing' && (<span>Processing...</span>)}
+                    {upload.status === 'complete' &&
+                      (<Link
+                        href={upload.url}
+                        underline="hover"
+                        color="inherit"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {upload.url}
+                      </Link>)}
+                    {upload.status === 'error' && (<span>upload.error && {upload.error}</span>)}
+                    {upload.status === 'retrying' && (<span>Too many parallel requests, retrying in {retryTimeout / 1000} seconds</span>)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {upload.status === 'uploading' && (<span>{Math.floor(upload.progress * 100)}% completed</span>)}
+                    {upload.status === 'processing' && <span>Wait </span>}
+                    {upload.status === 'complete' && (
+                      <Button onClick={() => handleCopy(upload.url)}>
+                        <span className={classnames({ hidden: copied, 'hidden desktop:inline': !copied })}>
+                          Copy link
+                        </span>
+                        <span className={classnames({ hidden: copied, 'inline desktop:hidden': !copied })}>
+                          Copy
+                        </span>
+                        <span className={classnames({ hidden: !copied })}>Copied</span>
+                      </Button>)}
+                  </Typography>
+                  {(upload.status === 'enqueued' || upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <LinearProgress color="success" variant="determinate" value={Math.floor(upload.progress * 100)}/>}
+                  {upload.status === 'complete' && <LinearProgress color="success" />}
+                  {upload.status === 'error' && <LinearProgress color="success" variant="determinate" value={0} />}
+                </ListItemText>
+              </ListItemButton>
               <Typography variant="body2" color="text.secondary">
-                {upload.status === 'uploading' && (
-                  <span>Uploading {bytes(upload.file.size * upload.progress)} of {bytes(upload.file.size)}</span>
-                  )}
-                {upload.status === 'enqueued' && (<span>Upload in queue, please wait</span>)}
-                {upload.status === 'processing' && (<span>Processing...</span>)}
-                {upload.status === 'complete' && 
-                  (<Link
-                    href={upload.url}
-                    underline="hover"
-                    color="inherit"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {upload.url}
-                  </Link>)}
-                {upload.status === 'error' && (<span>upload.error && {upload.error}</span>)}
-                {upload.status === 'retrying' && (<span>Too many parallel requests, retrying in {retryTimeout / 1000} seconds</span>)}
+                <div
+                  className={classnames('flex bg-palette-200 mt-1', {
+                    'bg-error-dashed opacity-20': upload.status === 'error',
+                    'bg-primary-dashed move opacity-20': upload.status === 'processing'
+                  })}
+                  style={{ height: '5px' }}
+                >
+                  <div
+                    style={{ width: `${Math.floor(upload.progress * 100)}%` }}
+                    className={classnames('bg-primary', {
+                      hidden: upload.status === 'processing' || upload.status === 'error'
+                    })}
+                  />
+                </div>
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {upload.status === 'uploading' && (<span>{Math.floor(upload.progress * 100)}% completed</span>)}
-                {upload.status === 'processing' && <span>Wait </span>}
-                {upload.status === 'complete' && (
-                  <Button onClick={() => handleCopy(upload.url)}>
-                    <span className={classnames({ hidden: copied, 'hidden desktop:inline': !copied })}>
-                      Copy link
-                    </span>
-                    <span className={classnames({ hidden: copied, 'inline desktop:hidden': !copied })}>
-                      Copy
-                    </span>
-                    <span className={classnames({ hidden: !copied })}>Copied</span>
-                  </Button>)}
-              </Typography>
-          </ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            <div
-              className={classnames('flex bg-palette-200 mt-1', {
-                'bg-error-dashed opacity-20': upload.status === 'error',
-                'bg-primary-dashed move opacity-20': upload.status === 'processing'
-              })}
-              style={{ height: '5px' }}
-            >
-              <div
-                style={{ width: `${Math.floor(upload.progress * 100)}%` }}
-                className={classnames('bg-primary', {
-                  hidden: upload.status === 'processing' || upload.status === 'error'
-                })}
-              />
-            </div>
-          </Typography>
-        </Item>
-      </Stack>
+            </Item>
+        </CardContent>
+      </Card>
   );
 }
