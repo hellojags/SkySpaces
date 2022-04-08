@@ -432,7 +432,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             {...props}
           />
         </Grid>
-        <Grid item lg={12} sx={{ display: "flex" }}>
+        {/* <Grid item lg={12} sx={{ display: "flex" }}>
         {uploads.map((upload) => (
           <UploaderElement
             key={upload.id}
@@ -440,7 +440,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             folderPath={folderPath}
           />
         ))}
-      </Grid>
+      </Grid> */}
       </Grid>
     </Box>
   );

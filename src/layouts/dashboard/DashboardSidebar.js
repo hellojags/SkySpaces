@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
+import { Box, Link, Button, Drawer, Typography, Avatar, Stack, LinearProgress } from '@mui/material';
 // components
 import Logo from '../../components/Logo';
 import Scrollbar from '../../components/Scrollbar';
@@ -64,7 +64,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
         </Box>
       </Box>
 
-      <Box sx={{ mb: 2.5, mx: 2.5 }}>
+      {/* <Box sx={{ mb: 2.5, mx: 2.5 }}>
         <Link underline="none" component={RouterLink} to="#">
           <AccountStyle>
             <Avatar src={account.photoURL} alt="photoURL" />
@@ -78,7 +78,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             </Box>
           </AccountStyle>
         </Link>
-      </Box>
+      </Box> */}
 
       <NavSection navConfig={sidebarConfig} />
 
@@ -110,26 +110,12 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
               Buy Storage
             </Button>
           </Box>
-          <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            In-Progress Counts
+          <Box>
+            <LinearProgress variant="determinate" value={50} />
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              2.5 Gb of 5Gb used
             </Typography>
-
-            <Typography paddingTop={2} gutterBottom variant="h6">
-             Uploads: {uploads?.length}
-            </Typography>
-            
           </Box>
-
-          <Button
-            fullWidth
-            href="https://material-ui.com/store/items/minimal-dashboard/"
-            target="_blank"
-            variant="contained"
-            color="error"
-          >
-           Cancel Uploads
-          </Button>
         </Stack>
       </Box>
     </Scrollbar>

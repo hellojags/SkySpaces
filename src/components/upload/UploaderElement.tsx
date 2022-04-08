@@ -15,6 +15,7 @@ import Link from '@mui/material/Link';
 import { useFileManager } from '../../contexts';
 import { useSkynetManager } from '../../contexts';
 import { ChonkyIconName } from '@skynethubio/web3-file-explorer';
+import { makeStyles } from '@mui/styles';
 import { 
   Typography, 
   CircularProgress,
@@ -73,7 +74,34 @@ const createUploadErrorMessage = (error) => {
 const client = new SkynetClient("https://siasky.net");
 
 //export default function UploaderElement({upload}) {
-export default function UploaderElement({ upload, folderPath }) {
+
+ /*  const StatusIcon = styled(Icon)({
+    width: 40,
+    height: 40,
+  }); */
+  const useStyles = makeStyles((theme) => ({
+    successIcon: {
+      color: theme.palette.success.main,
+      width: 40,
+      height: 40,
+    },
+    errorIcon: {
+      color: theme.palette.error.main,
+      width: 40,
+      height: 40,
+    },
+    errorProgress: {
+      backgroundColor: theme.palette.error.main
+    },
+    statusQueued : {
+      color: theme.palette.grey[500]
+    },
+    enqueuedProgress : {
+      backgroundColor: theme.palette.grey[500]
+    },
+  }));
+  export default function UploaderElement({ upload, folderPath }) {
+    const classes = useStyles();
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -153,9 +181,10 @@ export default function UploaderElement({ upload, folderPath }) {
             <Item>
               <ListItemButton>
                 <ListItemIcon>
-                  {(upload.status === 'enqueued' || upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <CircularProgress />}
-                  {upload.status === 'complete' && <Icon icon="clarity:happy-face-line" color="green" width="40" height="40" />}
-                  {upload.status === 'error' && <Icon icon="iconoir:emoji-sad" width="40" height="40" />}
+                  {(upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <CircularProgress />}
+                  {upload.status === 'enqueued' && <CircularProgress className={classes.statusQueued} />}
+                  {upload.status === 'complete' && <Icon icon="teenyicons:tick-circle-outline" className={classes.successIcon} />}
+                  {upload.status === 'error' && <Icon icon="ant-design:exclamation-circle-outlined" className={classes.errorIcon} />}
                 </ListItemIcon>
                 <ListItemText>
                   <Typography variant="body2" color="text.secondary">
@@ -191,9 +220,10 @@ export default function UploaderElement({ upload, folderPath }) {
                         <span className={classnames({ hidden: !copied })}>Copied</span>
                       </Button>)}
                   </Typography>
-                  {(upload.status === 'enqueued' || upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <LinearProgress color="success" />}
-                  {upload.status === 'complete' && <LinearProgress color="success" variant="determinate" value={100} />}
-                  {upload.status === 'error' && <LinearProgress color="success" variant="determinate" value={0} />}
+                  {(upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <LinearProgress />}
+                  {upload.status === 'enqueued' && <LinearProgress variant="determinate" value={0} className={classes.enqueuedProgress} />}
+                  {upload.status === 'complete' && <LinearProgress variant="determinate" value={100} className={classes.successIcon} />}
+                  {upload.status === 'error' && <LinearProgress variant="determinate" value={0} className={classes.errorProgress} />}
                 </ListItemText>
               </ListItemButton>
               <Typography variant="body2" color="text.secondary">

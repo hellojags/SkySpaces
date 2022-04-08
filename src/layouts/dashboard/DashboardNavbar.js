@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
 // material
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton, Button, Modal, Card, CardHeader, CardContent, Typography } from '@mui/material';
+import { Box, Stack, AppBar, Toolbar, IconButton, Button, Modal, Card, CardHeader, CardContent,CardActions, Typography, CircularProgress } from '@mui/material';
 // components
 import { MHidden } from '../../components/@material-extend';
 //
@@ -62,6 +62,14 @@ const styles = makeStyles((theme) => ({
     ['@media (min-width: 992px)']: {
       width: '60%'
     }
+  },
+  actionButton: {
+    justifyContent: 'center'
+  },
+  spinner: {
+    width: '15px !important',
+    height: '17px !important',
+    margin: '5px',
   }
 }));
 
@@ -83,7 +91,8 @@ export default function DashboardNavbar({ onOpenSidebar }) {
 
         <Searchbar />
         <Box sx={{ flexGrow: 1 }} />
-        {uploads.length !== 0 && <Button variant="outlined" onClick={handleOpen}>
+        {uploads.length !== 0 && <Button variant="text" onClick={handleOpen}>
+          <CircularProgress className={classes.spinner} />
           Uploading {uploads.length} items
         </Button>}
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
@@ -118,6 +127,11 @@ export default function DashboardNavbar({ onOpenSidebar }) {
           folderPath={folderPath}
           />
           ))}
+          <CardActions className={classes.actionButton}>
+            <Button variant="contained" onClick={handleClose} >
+              Close
+            </Button>
+          </CardActions>
           </Box>
       </Modal>
     </RootStyle>
