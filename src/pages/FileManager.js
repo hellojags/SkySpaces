@@ -150,7 +150,7 @@ export default function FileManager() {
     <Page title="SkySpaces" >
       <ActionHeader parentCallBack={handleCallbackFromAction} />
       <Container sx={{position: 'relative'}}>
-        <InfoDrawer open={openDrawer} onClose={onClose}/>
+        {openDrawer && <InfoDrawer open={openDrawer} onClose={onClose}/>}
         {/* <MySky></MySky> */}
         <Card sx={{mt: 2}}>
           {loggedIn ? <SkyBrowser /> : <Stack>loading...</Stack> }

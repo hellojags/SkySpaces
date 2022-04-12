@@ -56,9 +56,7 @@ export function InfoDrawer({open, onClose}) {
             <Container >
                 {!toggleMore && <Typography>
                 Lorem ipsum dolor sit amet. Sed itaque adipisci non libero perferendis architecto fugiat quo quae qui rerum necessitatibus et animi velit sed dolorem distinctio. Qui dolor commodi aut tempore voluptatibus est eveniet aspernatur ad suscipit dolorem.
-
 Non ratione quam non quibusdam laborum ut quidem provident. Hic consequatur officia et nostrum aspernatur eos dolorem rerum.
-
                 </Typography>}
                 <Grid container justify="center">
                     <Button variant="outlined" size="small" onClick={() => setToggleMore(!toggleMore)}>
@@ -67,12 +65,9 @@ Non ratione quam non quibusdam laborum ut quidem provident. Hic consequatur offi
                 </Grid>
                 {toggleMore && <Typography>
                 Lorem ipsum dolor sit amet. Sed itaque adipisci non libero perferendis architecto fugiat quo quae qui rerum necessitatibus et animi velit sed dolorem distinctio. Qui dolor commodi aut tempore voluptatibus est eveniet aspernatur ad suscipit dolorem.
-
 Non ratione quam non quibusdam laborum ut quidem provident. Hic consequatur officia et nostrum aspernatur eos dolorem rerum. Cum galisum inventore et nesciunt reiciendis vel harum molestiae.
-
                 </Typography>}
             </Container >
-            
         </Drawer>
     );
 }
