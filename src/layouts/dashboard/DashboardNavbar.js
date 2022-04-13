@@ -55,7 +55,7 @@ DashboardNavbar.propTypes = {
   onOpenSidebar: PropTypes.func
 };
 const styles = makeStyles((theme) => ({
-  modalStyle1:{
+  modalStyle:{
     overflow:'auto',
     maxHeight: 500,
     width: '80%',
@@ -79,7 +79,7 @@ export default function DashboardNavbar({ onOpenSidebar }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [folderPath, setFolderPath] = useState("/localhost/");
+  const [folderPath, setFolderPath] = useState("/localhost/"); // this needs to be dynamic
   return (
     <RootStyle>
       <ToolbarStyle>
@@ -93,7 +93,9 @@ export default function DashboardNavbar({ onOpenSidebar }) {
         <Box sx={{ flexGrow: 1 }} />
         {uploads.length !== 0 && <Button variant="text" onClick={handleOpen}>
           <CircularProgress className={classes.spinner} />
-          Uploading {uploads.length} items
+          <Typography>
+            Uploading {uploads.length} items
+          </Typography>
         </Button>}
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           <LanguagePopover />
@@ -107,7 +109,7 @@ export default function DashboardNavbar({ onOpenSidebar }) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style} className={classes.modalStyle1}>
+        <Box sx={style} className={classes.modalStyle}>
           <CardHeader title="Progress" />
         {/* <Card>
         </Card> */}
