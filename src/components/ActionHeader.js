@@ -7,14 +7,21 @@ import MenuButton from './MenuButton';
 /* import { createStyles, makeStyles } from '@mui/styles'; */
 
 const useStyles = makeStyles((theme) => ({
-    right: {
+    rightGrid: {
         marginLeft: 'auto'
+    },
+    leftGrid: {
+        width: '50%'
     },
     toolbarCss: {
         width: '100%',
         borderBottom: '1px solid #ccc',
         borderTop: '1px solid #ccc',
         zIndex: 1099
+    },
+    chip: {
+        width: 'auto',
+        padding: 0
     }
 }));
 
@@ -23,13 +30,14 @@ export function ActionHeader(props) {
     const classes = useStyles();
     const handleClick = (clickedChip) => {
         console.log(clickedChip);
+        setSelectedChip(clickedChip);
     };
 
     const handleDrawerOpen = () => {
         props.parentCallBack(true);
     };
-    const [inMyFiles, setInMyFiles] = React.useState(true);
-    const [inPhotos, setInPhotos] = React.useState(false);
+    const [inMyFiles, setInMyFiles] = React.useState(false);
+    const [inPhotos, setInPhotos] = React.useState(true);
     const [selected, setSelected] = React.useState(false);
     const [selectedChip, setSelectedChip] = React.useState(0);
     const [chipData, setChipData] = React.useState([
@@ -46,8 +54,8 @@ export function ActionHeader(props) {
     return (
         <Toolbar className={classes.toolbarCss} disableGutters={true} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             {inMyFiles &&
-                <Grid sx={{ width: '50%' }}>
-                    <Button sx={{ color: '#00AB55' }} onClick={createNewHandler}><Icon icon="ic:outline-add" /> New Folder</Button>
+                <Grid className={classes.leftGrid}>
+                    <Button onClick={createNewHandler}><Icon icon="ic:outline-add" /> New Folder</Button>
                     <MenuButton buttonName="Upload" items={['Files', 'Folder', 'Web App']} />
                 </Grid>}
             {selected &&
@@ -75,7 +83,7 @@ export function ActionHeader(props) {
                 >
                     {chipData.map((data) => {
                         return (
-                            <ListItem key={data.key} sx={{ width: 'auto' }} onClick={handleClick(data.key)}>
+                            <ListItem key={data.key} className={classes.chip} onClick={() => handleClick(data.key)}>
                                 <Chip
                                     label={data.label}
                                     variant={data.key === selectedChip ? "" : 'outlined'}
@@ -85,7 +93,7 @@ export function ActionHeader(props) {
                     })}
                 </Paper>}
             {(inMyFiles || selected) &&
-                <Grid className={classes.right}>
+                <Grid className={classes.rightGrid}>
                     {!selected &&
                         <MenuButton buttonName="Sort" items={['Name', 'Modified', 'File Size']} order={['Ascending', 'Descending']} />
                     }

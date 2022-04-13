@@ -14,7 +14,8 @@ const useStyles = makeStyles({
       "& .MuiDrawer-paper": {
         position: "absolute",
         transition: "none !important",
-        borderTop: "1px solid #e5e8eb"
+        borderTop: "1px solid #e5e8eb",
+        top: "-17px"
       }
     }
   });
@@ -50,7 +51,9 @@ export function InfoDrawer({open, onClose}) {
                 <IconButton onClick={onClose}>
                     {theme.direction === 'rtl' ? <Icon icon="ci:chevron-left" /> : <Icon icon="ci:chevron-right" />}
                 </IconButton>
-                My Drawer
+                <Typography variant="h4">
+                    My Drawer
+                </Typography>
             </DrawerHeader>
             <Divider />
             <Container >
