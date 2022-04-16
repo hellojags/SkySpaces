@@ -94,7 +94,9 @@ const client = new SkynetClient("https://siasky.net");
       backgroundColor: theme.palette.error.main
     },
     statusQueued : {
-      color: theme.palette.grey[500]
+      color: theme.palette.grey[500],
+      width: 40,
+      height: 40
     },
     enqueuedProgress : {
       backgroundColor: theme.palette.grey[500]
@@ -182,7 +184,7 @@ const client = new SkynetClient("https://siasky.net");
               <ListItemButton>
                 <ListItemIcon>
                   {(upload.status === 'retrying' || upload.status === 'uploading' || upload.status === 'processing') && <CircularProgress />}
-                  {upload.status === 'enqueued' && <CircularProgress className={classes.statusQueued} />}
+                  {upload.status === 'enqueued' && <Icon icon="clarity:alarm-clock-line" className={classes.statusQueued} />}
                   {upload.status === 'complete' && <Icon icon="teenyicons:tick-circle-outline" className={classes.successIcon} />}
                   {upload.status === 'error' && <Icon icon="ant-design:exclamation-circle-outlined" className={classes.errorIcon} />}
                 </ListItemIcon>

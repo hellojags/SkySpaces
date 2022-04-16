@@ -36,8 +36,8 @@ export function ActionHeader(props) {
     const handleDrawerOpen = () => {
         props.parentCallBack(true);
     };
-    const [inMyFiles, setInMyFiles] = React.useState(false);
-    const [inPhotos, setInPhotos] = React.useState(true);
+    const [inMyFiles, setInMyFiles] = React.useState(true);
+    const [inPhotos, setInPhotos] = React.useState(false);
     const [selected, setSelected] = React.useState(false);
     const [selectedChip, setSelectedChip] = React.useState(0);
     const [chipData, setChipData] = React.useState([
