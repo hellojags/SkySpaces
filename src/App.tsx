@@ -6,13 +6,14 @@ import GlobalStyles from './theme/globalStyles';
 // components
 import ScrollToTop from './components/ScrollToTop';
 import { BaseOptionChartStyle } from './components/charts/BaseOptionChart';
-import { SkynetProvider, FileManagerProvider, SkynetManagerProvider } from './contexts';
+import { SkynetProvider, FileManagerProvider, SkynetManagerProvider, UserProfileProvider } from './contexts';
 // ----------------------------------------------------------------------
 
 export default function App() {
   return (
     <ThemeConfig>
       <SkynetProvider>
+        <UserProfileProvider>
         <SkynetManagerProvider>
           <FileManagerProvider>
             <GlobalStyles />
@@ -20,6 +21,7 @@ export default function App() {
             <Router />
           </FileManagerProvider>
         </SkynetManagerProvider>
+        </UserProfileProvider>
       </SkynetProvider>
     </ThemeConfig>
   );

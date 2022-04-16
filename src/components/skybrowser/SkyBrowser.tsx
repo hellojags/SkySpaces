@@ -419,7 +419,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             type="file"
           />
         </Grid>
-        <Grid item md={12} lg={12} sx={{ height: 400 }}>
+        <Grid item md={12} lg={12} sx={{ height: '78vh' }}>
           <FullFileBrowser
             ref={fileBrowserRef}
             files={files}

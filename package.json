@@ -48,6 +48,7 @@
     "@mui/styles": "^5.5.1",
     "@mui/utils": "^5.0.0",
     "@reduxjs/toolkit": "^1.6.2",
+    "@skynethub/userprofile-library": "^0.1.18-beta",
     "@skynethubio/web3-file-explorer": "^0.1.0",
     "@skynethubio/web3-file-explorer-icons": "^0.1.1",
     "@testing-library/jest-dom": "^5.14.1",
