@@ -39,12 +39,12 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const { login, logout, loggedIn, userID } = useSkynet();
-//  const { getUserProfile } = useUserProfile();
+  const { userDetails, getProfile } = useUserProfile();
   const navigate = useNavigate();
   const anchorRef = useRef(null);
-  
+
   const [open, setOpen] = useState(false);
-  const [userDetails, setUserDetails] = useState();
+  const [userInfo, setUserInfo] = useState();
   const [showCopyIcon, setShowCopyIcon] = useState(true);
   const handleOpen = () => {
     setOpen(true);
@@ -54,11 +54,10 @@ export default function AccountPopover() {
     setOpen(false);
   };
 
-  /* useEffect(() => {
-    const user =  getUserProfile();
-     setUserDetails(user);
-     console.log(userDetails, 'account popuver');
-  }, []) */
+  useEffect(() => {
+    setUserInfo(userDetails);
+    console.log(userInfo, 'account popover compnent');
+  }, [userDetails])
 
   const logoutHandler = async () => {
     await logout();
@@ -74,7 +73,7 @@ export default function AccountPopover() {
 
   return (
     <>
-      <IconButton
+      {userInfo && <IconButton
         ref={anchorRef}
         onClick={handleOpen}
         sx={{
@@ -94,10 +93,10 @@ export default function AccountPopover() {
           })
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
-      </IconButton>
+        {userInfo && userInfo.avatar.length !== 0 && <Avatar src={userInfo.avatar[0].url} alt="photoURL" />}
+      </IconButton>}
 
-      <MenuPopover
+      {userInfo && <MenuPopover
         open={open}
         onClose={handleClose}
         anchorEl={anchorRef.current}
@@ -105,17 +104,17 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle1" noWrap>
-            {account.displayName}
+            {userInfo.username}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {userInfo.emailID}
           </Typography>
           <Stack direction="row" spacing={1}>
             <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
               {userID}
             </Typography>
-            {showCopyIcon && <Button variant="text" endIcon={<Icon icon="iconoir:copy" />} sx={{minWidth: 'auto', padding: 0}} onClick={copyToClipboard}></Button>}
-            {!showCopyIcon && <Button variant="text" endIcon={<Icon icon="bi:check-all" />} sx={{minWidth: 'auto', padding: 0}} onClick={copyToClipboard}></Button>}
+            {showCopyIcon && <Button variant="text" endIcon={<Icon icon="iconoir:copy" />} sx={{ minWidth: 'auto', padding: 0 }} onClick={copyToClipboard}></Button>}
+            {!showCopyIcon && <Button variant="text" endIcon={<Icon icon="bi:check-all" />} sx={{ minWidth: 'auto', padding: 0 }} onClick={copyToClipboard}></Button>}
           </Stack>
         </Box>
 
@@ -148,7 +147,7 @@ export default function AccountPopover() {
             Logout
           </Button>
         </Box>
-      </MenuPopover>
+      </MenuPopover>}
     </>
   );
 }

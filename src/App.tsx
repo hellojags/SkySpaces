@@ -14,13 +14,13 @@ export default function App() {
     <ThemeConfig>
       <SkynetProvider>
         <UserProfileProvider>
-        <SkynetManagerProvider>
-          <FileManagerProvider>
-            <GlobalStyles />
-            <BaseOptionChartStyle />
-            <Router />
-          </FileManagerProvider>
-        </SkynetManagerProvider>
+          <SkynetManagerProvider>
+            <FileManagerProvider>
+              <GlobalStyles />
+              <BaseOptionChartStyle />
+              <Router />
+            </FileManagerProvider>
+          </SkynetManagerProvider>
         </UserProfileProvider>
       </SkynetProvider>
     </ThemeConfig>
