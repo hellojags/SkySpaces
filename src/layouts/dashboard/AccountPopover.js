@@ -45,6 +45,8 @@ export default function AccountPopover() {
 
   const [open, setOpen] = useState(false);
   const [userInfo, setUserInfo] = useState();
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [ellipsisId, setEllipsisId] = useState(userID);
   const [showCopyIcon, setShowCopyIcon] = useState(true);
   const handleOpen = () => {
     setOpen(true);
@@ -54,10 +56,25 @@ export default function AccountPopover() {
     setOpen(false);
   };
 
+  const getAvatarKey = (str) => {
+      return str.split('//')[1];
+  }
+
+  const ellipsisUserId = (userId) => {
+      return userId.substr(0, 9) + '...' + userId.substr(userId.length-9, userId.length);
+  }
   useEffect(() => {
+    if(userID) {
+      setEllipsisId(ellipsisUserId(userID));
+    }
     setUserInfo(userDetails);
+      if (userDetails && userDetails.avatar.length !== 0) {
+        let avatarKey = getAvatarKey(userDetails.avatar[0].url);
+        setAvatarUrl('https://siasky.net/' + avatarKey);
+        //console.log(avatarUrl);
+      }
     console.log(userInfo, 'account popover compnent');
-  }, [userDetails])
+  }, [userDetails, userID, userInfo])
 
   const logoutHandler = async () => {
     await logout();
@@ -93,7 +110,7 @@ export default function AccountPopover() {
           })
         }}
       >
-        {userInfo && userInfo.avatar.length !== 0 && <Avatar src={userInfo.avatar[0].url} alt="photoURL" />}
+        {avatarUrl !== '' && <Avatar src={avatarUrl} alt="photoURL" />}
       </IconButton>}
 
       {userInfo && <MenuPopover
@@ -110,8 +127,8 @@ export default function AccountPopover() {
             {userInfo.emailID}
           </Typography>
           <Stack direction="row" spacing={1}>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-              {userID}
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              {ellipsisId}
             </Typography>
             {showCopyIcon && <Button variant="text" endIcon={<Icon icon="iconoir:copy" />} sx={{ minWidth: 'auto', padding: 0 }} onClick={copyToClipboard}></Button>}
             {!showCopyIcon && <Button variant="text" endIcon={<Icon icon="bi:check-all" />} sx={{ minWidth: 'auto', padding: 0 }} onClick={copyToClipboard}></Button>}

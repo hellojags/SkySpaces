@@ -36,7 +36,7 @@ const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
   minHeight: APPBAR_MOBILE,
   [theme.breakpoints.up('lg')]: {
     minHeight: APPBAR_DESKTOP,
-    padding: theme.spacing(0, 5)
+    padding: theme.spacing(0, 2)
   }
 }));
 const style = {
@@ -58,7 +58,7 @@ const styles = makeStyles((theme) => ({
   modalStyle:{
     overflow:'auto',
     maxHeight: 500,
-    width: '80%',
+    width: '90%',
     ['@media (min-width: 992px)']: {
       width: '60%'
     }
