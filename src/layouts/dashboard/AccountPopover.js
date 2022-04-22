@@ -73,7 +73,7 @@ export default function AccountPopover() {
         setAvatarUrl('https://siasky.net/' + avatarKey);
         //console.log(avatarUrl);
       }
-    console.log(userInfo, 'account popover compnent');
+    //console.log(userInfo, 'account popover compnent');
   }, [userDetails, userID, userInfo])
 
   const logoutHandler = async () => {
