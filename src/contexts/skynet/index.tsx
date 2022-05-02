@@ -6,17 +6,21 @@ import React, {
 } from "react";
 import { MySky, SkynetClient } from "skynet-js";
 import { FileSystemDAC } from "fs-dac-library";
+import apiConstant from "../../constants/apiConstant";
 // Initiate the SkynetClient
 //const portal = "https://skynetpro.net";
-const portal = "https://siasky.net";
-const client = new SkynetClient(portal);
+/* const portal = "https://siasky.net";
+const client = new SkynetClient(portal); */
+const portal = apiConstant.apiUrl;
+const SKYNET_JWT = apiConstant.SKYNET_JWT;
+const client = new SkynetClient(portal, { customCookie: SKYNET_JWT });
 const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
-const dataDomain =  hostname === 'localhost' ? 'localhost' : 'skyspaces.hns'
+const dataDomain = hostname === 'localhost' ? 'localhost' : 'skyspaces.hns'
 
 type State = {
   mySky: MySky;
   userID: string;
-  fileSystemDAC : any;
+  fileSystemDAC: any;
   dataDomain: string;
   loggedIn: boolean;
   login: () => void;
@@ -50,7 +54,7 @@ export function SkynetProvider({ children }: Props) {
         await mySky.loadDacs(fileSystemDAC);
         // check if user is already logged in with permissions
         const loggedIn = await mySky.checkLogin();
-        console.log("loggedIn: "+loggedIn);
+        console.log("loggedIn: " + loggedIn);
         // set react state for login status and
         // to access mySky in rest of app
         setMySky(mySky);

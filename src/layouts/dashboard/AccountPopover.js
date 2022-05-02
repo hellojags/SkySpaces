@@ -14,6 +14,7 @@ import account from '../../_mocks_/account';
 
 import { useSkynet, useUserProfile } from '../../contexts';
 import { useNavigate } from 'react-router-dom';
+import apiConstant from '../../constants/apiConstant';
 
 // ----------------------------------------------------------------------
 
@@ -70,7 +71,7 @@ export default function AccountPopover() {
     setUserInfo(userDetails);
       if (userDetails && userDetails.avatar.length !== 0) {
         let avatarKey = getAvatarKey(userDetails.avatar[0].url);
-        setAvatarUrl('https://siasky.net/' + avatarKey);
+        setAvatarUrl(apiConstant.apiUrl + avatarKey);
         //console.log(avatarUrl);
       }
     //console.log(userInfo, 'account popover compnent');
