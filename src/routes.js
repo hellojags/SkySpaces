@@ -11,6 +11,7 @@ import Products from './pages/Products';
 import Blog from './pages/Blog';
 import User from './pages/User';
 import NotFound from './pages/Page404';
+import AuthGaurd from './AuthGaurd';
 
 // ----------------------------------------------------------------------
 
@@ -18,7 +19,7 @@ export default function Router() {
   return useRoutes([
     {
       path: '/home',
-      element: <DashboardLayout />,
+      element: <AuthGaurd component={<DashboardLayout />}></AuthGaurd>,
       children: [
         { element: <Navigate to="/home/filemanager" replace /> },
         // { path: 'app', element: <DashboardApp /> },
