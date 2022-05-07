@@ -10,7 +10,8 @@ export function MenuButton(props) {
   };
 
   const handleClose = (event) => {
-   // console.log('dropdown button from action header called', event.currentTarget.innerText);
+    console.log('dropdown button from action header called', event.currentTarget.innerText);
+    props.parentCallBack(event.currentTarget.innerText);
     setAnchorEl(null);
   };
   let startIcon = <Icon icon="charm:upload" />;
@@ -22,7 +23,7 @@ export function MenuButton(props) {
   }
   const open = Boolean(anchorEl);
   const Wrapper = props.iconType;
-  const listItems = props.items.map((link) => { return (<MenuItem onClick={handleClose} >{link}</MenuItem>) });
+  const listItems = props.items.map((link, index) => { return (<MenuItem key={index} onClick={handleClose} >{link}</MenuItem>) });
   return (
     <React.Fragment>
       <Button

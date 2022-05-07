@@ -7,13 +7,13 @@ function AuthGaurd(props) {
     const { mySky, logout } = useSkynet();
 
     const checkLogin = useCallback(async () => {
-        console.log('first check');
+        //console.log('first check');
         if (mySky) {
             const loggedIn = await mySky.checkLogin();
             if (!loggedIn) {
                 await logout();
                 navigate('/login', { replace: true });
-                console.log(loggedIn, 'final check');
+                //console.log(loggedIn, 'final check');
             }
         }
     }, [mySky, logout, navigate]);

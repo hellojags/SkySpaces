@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import { createTheme, styled, useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import MenuButton from './MenuButton';
+import { useAction } from '../contexts'
 /* import { createStyles, makeStyles } from '@mui/styles'; */
 
 const useStyles = makeStyles((theme) => ({
@@ -29,13 +30,15 @@ export function ActionHeader(props) {
     const theme = useTheme();
     const classes = useStyles();
     const handleClick = (clickedChip) => {
-        console.log(clickedChip);
+        // console.log(clickedChip);
         setSelectedChip(clickedChip);
     };
 
     const handleDrawerOpen = () => {
         props.parentCallBack(true);
     };
+
+    const { setActionMsg } = useAction();
     const [inMyFiles, setInMyFiles] = React.useState(true);
     const [inPhotos, setInPhotos] = React.useState(false);
     const [selected, setSelected] = React.useState(false);
@@ -47,26 +50,28 @@ export function ActionHeader(props) {
         { key: 3, label: 'Places' },
     ]);
 
-    const createNewHandler = () => {
-        console.log('New Button clicked');
+    const actionHandler = (action) => {
+        console.log(action);
+        //props.parentCallBack(action);
+        setActionMsg(action);
     }
-
     return (
         <Toolbar className={classes.toolbarCss} disableGutters={true} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             {inMyFiles &&
                 <Grid className={classes.leftGrid}>
-                    <Button onClick={createNewHandler}><Icon icon="ic:outline-add" /> New Folder</Button>
-                    <MenuButton buttonName="Upload" items={['Files', 'Folder', 'Web App']} />
+                    <Button onClick={() => actionHandler('Create Folder')}><Icon icon="ic:outline-add" /> New Folder</Button>
+                    <MenuButton parentCallBack={actionHandler} buttonName="Upload" items={['Files', 'Folder', 'Web App']} />
                 </Grid>}
             {selected &&
                 <Grid>
-                    <Button startIcon={<Icon icon="fa6-regular:share-from-square" />}>Share</Button>
-                    <Button startIcon={<Icon icon="bi:trash" />}>Delete</Button>
-                    <Button startIcon={<Icon icon="carbon:folder-move-to" />}>Move to</Button>
-                    <Button startIcon={<Icon icon="cil:copy" />}>Copy to</Button>
-                    <Button startIcon={<Icon icon="bx:rename" />}>Rename</Button>
-                    <Button startIcon={<Icon icon="cil:library" />}>Create album from folder</Button>
+                    <Button onClick={() => actionHandler('Share')} startIcon={<Icon icon="fa6-regular:share-from-square" />}>Share</Button>
+                    <Button onClick={() => actionHandler('Delete')} startIcon={<Icon icon="bi:trash" />}>Delete</Button>
+                    <Button onClick={() => actionHandler('Move To')} startIcon={<Icon icon="carbon:folder-move-to" />}>Move to</Button>
+                    <Button onClick={() => actionHandler('Copy To')} startIcon={<Icon icon="cil:copy" />}>Copy to</Button>
+                    <Button onClick={() => actionHandler('Rename')} startIcon={<Icon icon="bx:rename" />}>Rename</Button>
+                    {/* <Button startIcon={<Icon icon="cil:library" />}>Create album from folder</Button> */}
                     <Button startIcon={<Icon icon="icomoon-free:embed2" />}>Embed</Button>
+                    <Button onClick={() => actionHandler('Version History')} startIcon={<Icon icon="ant-design:history-outlined" />}>Version History</Button>
                 </Grid>
             }
             {inPhotos &&

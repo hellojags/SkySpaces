@@ -46,6 +46,8 @@ import UploaderElement from "../upload/UploaderElement";
 import { isEmpty } from "lodash";
 import { getTime } from "date-fns";
 import { DirectoryIndex } from "fs-dac-library";
+import ActionHeader from '../ActionHeader';
+import { useAction } from '../../contexts';
 //TODOs
 // 1. currently only cupport Files drop, need to add support for directory as well
 
@@ -55,8 +57,12 @@ export type VFSProps = Partial<FileBrowserProps>;
 
 export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const inputFilesRef: any = useRef(); // Reference to Input type File Picker
+  const inputFoldersRef: any = useRef(); // Reference to Input type File Picker
   const fileBrowserRef = React.useRef<FileBrowserHandle>(null); // Reference to Chonky Browser component
   const [folderPath, setFolderPath] = useState("/localhost/");
+  const [uploadMode, setUploadMode] = useState('');
+  const [newFolderName, setNewFolderName] = useState('');
+  const { actionsMsg, setActionMsg } = useAction();
 
   const {
     mode,
@@ -70,7 +76,8 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
-      console.log(`acceptedFiles -> ${JSON.stringify(acceptedFiles)}`);
+      console.log(acceptedFiles);
+      //return;
       await handleDrop(acceptedFiles, folderPath);
     },
     [folderPath]
@@ -184,6 +191,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       console.log(`# KeyValues = ${JSON.stringify(KeyValues)}`);
       return KeyValues;
     });
+    console.log(CustomFileMap_Files.concat(CustomFileMap_Dirs));
     return CustomFileMap_Files.concat(CustomFileMap_Dirs);
   };
   // Runs once on page load
@@ -221,7 +229,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       // If file is uploaded at current path, display file
       if (folderPath === completedUpload.absoluteFolderPath) {
         // convert Upload object to Chonky FileData Object for rendering in browser
-        const chonkyFileData = convert2ChonkyFileData(completedUpload,false);
+        const chonkyFileData = convert2ChonkyFileData(completedUpload, false);
         fileBrowserRef.current.requestFileAction(
           addUploadedFiles,
           chonkyFileData
@@ -232,7 +240,8 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       if (tempRemainingPath.length === 3) {
         // TODO: add directory parameter in convert2ChonkyFileData
         console.log(`upload.absoluteFolderPath.split ${completedUpload.absoluteFolderPath.split("/")}`)
-        const chonkyFileData = convert2ChonkyFileData(completedUpload,true);
+        const chonkyFileData = convert2ChonkyFileData(completedUpload, true);
+        console.log(chonkyFileData);
         fileBrowserRef.current.requestFileAction(
           ChonkyActions.CreateFolder,
           chonkyFileData
@@ -308,6 +317,11 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     //fileBrowserRef.current.requestFileAction(addUploadedFiles, chonkyFileData);
   }, [currentFolderId]);
 
+  React.useEffect(() => {
+    if (props) { }
+    console.log(props);
+  }, [props])
+
   const useFileActionHandler = (
     setCurrentFolderId: (folderId: string) => void,
     deleteFiles: (files: CustomFileData[]) => void,
@@ -331,6 +345,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             return;
           }
         } else if (data.id === ChonkyActions.DeleteFiles.id) {
+          console.log(data.state.selectedFilesForAction);
           deleteFiles(data.state.selectedFilesForAction!);
         } else if (data.id === ChonkyActions.MoveFiles.id) {
           moveFiles(
@@ -355,7 +370,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             }
           } else {
             //todo: need to handle multiple folders
-            folderName = data?.payload[0]?.name ?? "failed";
+            folderName = newFolderName === '' ? data?.payload[0]?.name : newFolderName;
             const folderId = createHash("sha256")
               .update(`${folderPath}/${folderName}`)
               .digest("hex");
@@ -364,8 +379,11 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
         } else if (data.id === ChonkyActions.UploadFiles.id) {
           console.log("getUploads() " + getUploads().length);
           console.log("uploads " + uploads.length);
-          console.log("inputFilesRef.current " + inputFilesRef.current);
-          inputFilesRef.current.click();
+          if (uploadMode === 'Folder') {
+            inputFoldersRef.current.click();
+          } else {
+            inputFilesRef.current.click();
+          }
         } else if (data.id === addUploadedFiles.id) {
           uploadFiles(data?.payload);
           console.log("### Insite Custom Action ####");
@@ -380,6 +398,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
         setCurrentFolderId,
         uploads,
         folderPath,
+        newFolderName
       ]
     );
   };
@@ -398,6 +417,106 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     []
   );
 
+  const createFolderData = useCallback(async () => {
+    let folderName;
+    let directoryIndexSkyFS;
+    let chonkyCustomFileMap;
+    directoryIndexSkyFS = await getDirectoryIndex(folderPath);
+    if (
+      isEmpty(directoryIndexSkyFS.directories) &&
+      isEmpty(directoryIndexSkyFS.files)
+    ) {
+      const response = await createDirectory(folderPath, newFolderName);
+      directoryIndexSkyFS.directories = {
+        home: {
+          name: newFolderName,
+          created: Math.floor(Date.now() / 1000),
+          id: createHash("sha256").update(folderPath + '/' + newFolderName).digest("hex"),
+          //id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 35)
+        },
+      };
+      const chonkyCustomFileMap =
+        convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS); // Conver directoryIndexSkyFS data to Chonky Browser format
+      console.log(
+        "# chonkyCustomFileMap =" + JSON.stringify(chonkyCustomFileMap)
+      );
+      if (chonkyCustomFileMap?.length > 0) {
+        fileBrowserRef.current.requestFileAction(
+          ChonkyActions.CreateFolder,
+          chonkyCustomFileMap
+        );
+      }
+    } else {
+      const response = await createDirectory(folderPath, newFolderName);
+      chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
+      console.log(chonkyCustomFileMap);
+      if (chonkyCustomFileMap?.length > 0 && response) {
+        fileBrowserRef.current.requestFileAction(
+          ChonkyActions.CreateFolder,
+          chonkyCustomFileMap
+        );
+      }
+    }
+
+  }, [newFolderName])
+
+  useEffect(() => {
+    if (newFolderName !== '') {
+      createFolderData();
+    }
+  }, [newFolderName, createFolderData])
+
+  const clearActionMsg = useCallback(() => {
+    setActionMsg('');
+  }, [])
+
+  useEffect(() => {
+    handleCallbackFromAction(actionsMsg);
+    clearActionMsg();
+  }, [actionsMsg, clearActionMsg]);
+
+  const handleCallbackFromAction = (msgFromChild) => {
+    let folderName;
+    let directoryIndexSkyFS;
+    let chonkyCustomFileMap;
+    let selectedFiles = [];
+    //(async () => {
+    if (msgFromChild === 'Create Folder') {
+      setNewFolderName('');
+      folderName = prompt("Provide the name for your new folder:");
+      setNewFolderName(folderName);
+      /* directoryIndexSkyFS = await getDirectoryIndex(folderPath);
+      const response = createDirectory(folderPath, folderName);
+      chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
+      console.log(chonkyCustomFileMap);
+      if (chonkyCustomFileMap?.length > 0) {
+        fileBrowserRef.current.requestFileAction(
+          ChonkyActions.CreateFolder,
+          chonkyCustomFileMap
+        );
+      } */
+    }
+    if (msgFromChild === 'Files' || msgFromChild === 'Folder' || msgFromChild === 'Web App') {
+      if (msgFromChild === 'Folder') {
+        setUploadMode('Folder');
+        inputFoldersRef.current.click();
+      } else {
+        setUploadMode('Files');
+        inputFilesRef.current.click();
+      }
+    }
+    if (msgFromChild === 'Delete') {
+      fileBrowserRef.current.getFileSelection().forEach((value) => {
+        const result = chonkyCustomFileMap.find(obj => {
+          return obj.id === value;
+        })
+        selectedFiles.push(result);
+      });
+      console.log(selectedFiles);
+      handleFileAction(deleteFiles(selectedFiles));
+    }
+    //})();
+  }
   return (
     <Box
       sx={{
@@ -408,13 +527,25 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       }}
       {...getRootProps()}
     >
-     <Grid container alignContent="center" justifyContent="center" lg={12}>
+      <Grid container alignContent="center" justifyContent="center" lg={12}>
+        {/* <ActionHeader item lg={12} parentCallBack={handleCallbackFromAction} /> */}
         <Grid item lg={12} visibility="hidden">
           <input
             {...getInputProps()}
             ref={inputFilesRef}
             accept="*/*"
             id="contained-button-file"
+            multiple
+            type="file"
+          />
+          <input
+            {...getInputProps()}
+            ref={inputFoldersRef}
+            accept="*/*"
+            id="contained-button-file"
+            /* @ts-expect-error */
+            directory=""
+            webkitdirectory=""
             multiple
             type="file"
           />
