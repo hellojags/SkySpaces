@@ -57,10 +57,8 @@ export type VFSProps = Partial<FileBrowserProps>;
 
 export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const inputFilesRef: any = useRef(); // Reference to Input type File Picker
-  const inputFoldersRef: any = useRef(); // Reference to Input type File Picker
   const fileBrowserRef = React.useRef<FileBrowserHandle>(null); // Reference to Chonky Browser component
   const [folderPath, setFolderPath] = useState("/localhost/");
-  const [uploadMode, setUploadMode] = useState('');
   const [newFolderName, setNewFolderName] = useState('');
   const { actionsMsg, setActionMsg } = useAction();
 
@@ -379,11 +377,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
         } else if (data.id === ChonkyActions.UploadFiles.id) {
           console.log("getUploads() " + getUploads().length);
           console.log("uploads " + uploads.length);
-          if (uploadMode === 'Folder') {
-            inputFoldersRef.current.click();
-          } else {
-            inputFilesRef.current.click();
-          }
+          inputFilesRef.current.click();
         } else if (data.id === addUploadedFiles.id) {
           uploadFiles(data?.payload);
           console.log("### Insite Custom Action ####");
@@ -498,12 +492,13 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     }
     if (msgFromChild === 'Files' || msgFromChild === 'Folder' || msgFromChild === 'Web App') {
       if (msgFromChild === 'Folder') {
-        setUploadMode('Folder');
-        inputFoldersRef.current.click();
-      } else {
-        setUploadMode('Files');
-        inputFilesRef.current.click();
-      }
+      inputFilesRef.current.setAttribute("webkitdirectory", "");
+      inputFilesRef.current.setAttribute("directory", "");
+    } else {
+      inputFilesRef.current.removeAttribute("webkitdirectory");
+      inputFilesRef.current.removeAttribute("directory");
+    }
+    inputFilesRef.current.click();
     }
     if (msgFromChild === 'Delete') {
       fileBrowserRef.current.getFileSelection().forEach((value) => {
@@ -535,17 +530,6 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             ref={inputFilesRef}
             accept="*/*"
             id="contained-button-file"
-            multiple
-            type="file"
-          />
-          <input
-            {...getInputProps()}
-            ref={inputFoldersRef}
-            accept="*/*"
-            id="contained-button-file"
-            /* @ts-expect-error */
-            directory=""
-            webkitdirectory=""
             multiple
             type="file"
           />
