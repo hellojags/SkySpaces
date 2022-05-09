@@ -85,11 +85,9 @@ export function SkynetManagerProvider({ children }: Props) {
       ...files.map((file) => {
         let tempPath = ''
         // prepare file's folder path
-        if (mode === "directory" && file.path[0] !== '/') {
+        if (file.path[0] !== '/') {
           tempPath = folderPath + '/' + file.path;
-        } else {
-          tempPath = folderPath + file.path;
-        }
+        } 
         console.log(tempPath);
         //const absoluteFolderPath = tempPath[tempPath.length -1].join("/");
         const absoluteFolderPath = tempPath.substring(

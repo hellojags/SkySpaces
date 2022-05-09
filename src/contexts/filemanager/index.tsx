@@ -95,7 +95,7 @@ export function FileManagerProvider({ children }: Props) {
     onProgress?: (progress: number) => void
   ): Promise<any> => {
     try {
-      const filewithpath: FileWithPath = file;
+      const filewithpath: FileWithPath = {...file, path: file.path[0] !== '/' ? `/${file.path}` : file.path};
       // Check if directory exist at a file path, if not create directory structure before uploading a file
       await checkAndCreateDirectoryRecursively(
         directoryPath,
