@@ -9,7 +9,7 @@ import {
 import plusFill from "@iconify/icons-eva/plus-fill";
 import { Link as RouterLink } from "react-router-dom";
 // material
-import { Button, Container, Grid, Box } from "@mui/material";
+import { Button, Container, Grid, Box, Modal, Card, CardHeader, CardContent, CardActions,FormControl, Input, InputLabel, Typography, TextField } from "@mui/material";
 import { height } from "@mui/system";
 import { createHash } from "crypto";
 // Chonky
@@ -48,19 +48,43 @@ import { getTime } from "date-fns";
 import { DirectoryIndex } from "fs-dac-library";
 import ActionHeader from '../ActionHeader';
 import { useAction } from '../../contexts';
+import { makeStyles } from '@mui/styles';
 //TODOs
 // 1. currently only cupport Files drop, need to add support for directory as well
 
 setChonkyDefaults({ iconComponent: ChonkyIconFA });
-
+const styles = makeStyles((theme) => ({
+  modalStyle: {
+    overflow: 'auto',
+    width: '80%',
+    ['@media (min-width: 992px)']: {
+      width: '40%'
+    }
+  },
+  actionButton: {
+    justifyContent: 'right'
+  },
+}));
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+};
 export type VFSProps = Partial<FileBrowserProps>;
 
 export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
+  const classes = styles();
   const inputFilesRef: any = useRef(); // Reference to Input type File Picker
   const fileBrowserRef = React.useRef<FileBrowserHandle>(null); // Reference to Chonky Browser component
+  const folderNameRef:any = React.useRef(); // Reference to Chonky Browser component
   const [folderPath, setFolderPath] = useState("/localhost/");
   const [newFolderName, setNewFolderName] = useState('');
   const { actionsMsg, setActionMsg } = useAction();
+  const [open, setOpen] = useState(false);
 
   const {
     mode,
@@ -470,35 +494,22 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   }, [actionsMsg, clearActionMsg]);
 
   const handleCallbackFromAction = (msgFromChild) => {
-    let folderName;
-    let directoryIndexSkyFS;
     let chonkyCustomFileMap;
     let selectedFiles = [];
     //(async () => {
     if (msgFromChild === 'Create Folder') {
       setNewFolderName('');
-      folderName = prompt("Provide the name for your new folder:");
-      setNewFolderName(folderName);
-      /* directoryIndexSkyFS = await getDirectoryIndex(folderPath);
-      const response = createDirectory(folderPath, folderName);
-      chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
-      console.log(chonkyCustomFileMap);
-      if (chonkyCustomFileMap?.length > 0) {
-        fileBrowserRef.current.requestFileAction(
-          ChonkyActions.CreateFolder,
-          chonkyCustomFileMap
-        );
-      } */
+      setOpen(true);
     }
     if (msgFromChild === 'Files' || msgFromChild === 'Folder' || msgFromChild === 'Web App') {
       if (msgFromChild === 'Folder') {
-      inputFilesRef.current.setAttribute("webkitdirectory", "");
-      inputFilesRef.current.setAttribute("directory", "");
-    } else {
-      inputFilesRef.current.removeAttribute("webkitdirectory");
-      inputFilesRef.current.removeAttribute("directory");
-    }
-    inputFilesRef.current.click();
+        inputFilesRef.current.setAttribute("webkitdirectory", "");
+        inputFilesRef.current.setAttribute("directory", "");
+      } else {
+        inputFilesRef.current.removeAttribute("webkitdirectory");
+        inputFilesRef.current.removeAttribute("directory");
+      }
+      inputFilesRef.current.click();
     }
     if (msgFromChild === 'Delete') {
       fileBrowserRef.current.getFileSelection().forEach((value) => {
@@ -511,6 +522,18 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       handleFileAction(deleteFiles(selectedFiles));
     }
     //})();
+  }
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setNewFolderName('');
+    setOpen(false);
+  };
+
+  const getFolderName = () => {
+    if(folderNameRef.current) {
+      setNewFolderName(folderNameRef.current.firstChild.value);
+    }
+    setOpen(false);
   }
   return (
     <Box
@@ -557,6 +580,43 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
         ))}
       </Grid> */}
       </Grid>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style} className={classes.modalStyle}
+          component="form"
+          noValidate
+          autoComplete="off"
+        >
+          <CardHeader title="" />
+          <Card>
+            <CardContent>
+              {/* <Typography>
+                Please enter the folder name.
+              </Typography> */}
+              <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+                <InputLabel htmlFor="folder-name-input">Enter Folder Name</InputLabel>
+                <Input
+                  id="folder-name-input"
+                  type="text"
+                  ref={folderNameRef}
+                />
+              </FormControl>
+            </CardContent>
+            <CardActions className={classes.actionButton}>
+              <Button variant="contained" onClick={getFolderName} >
+                Submit
+              </Button>
+              <Button variant="contained" onClick={handleClose} >
+                Close
+              </Button>
+            </CardActions>
+          </Card>
+        </Box>
+      </Modal>
     </Box>
   );
 });
