@@ -83,7 +83,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const folderNameRef:any = React.useRef(); // Reference to Chonky Browser component
   const [folderPath, setFolderPath] = useState("/localhost/");
   const [newFolderName, setNewFolderName] = useState('');
-  const { actionsMsg, setActionMsg } = useAction();
+  const { actionsMsg, setActionMsg, setCurrentFolderPath } = useAction();
   const [open, setOpen] = useState(false);
 
   const {
@@ -232,6 +232,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     }
     console.log(`skyfsPath -> ${skyfsPath}`);
     setFolderPath(skyfsPath);
+    setCurrentFolderPath(skyfsPath);
   }, [folderChain]);
 
   // Runs everytime uploaded files status is updated
@@ -310,6 +311,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     }
     console.log(`new skyfsPath -> ${skyfsPath}`);
     setFolderPath(skyfsPath);
+    setCurrentFolderPath(skyfsPath);
     return skyfsPath;
   }, [currentFolderId, fileMap]);
 

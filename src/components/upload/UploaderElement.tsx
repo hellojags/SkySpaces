@@ -231,6 +231,9 @@ export default function UploaderElement({ upload, folderPath }) {
               {upload.status === 'enqueued' && <LinearProgress variant="determinate" value={0} className={classes.enqueuedProgress} />}
               {upload.status === 'complete' && <LinearProgress variant="determinate" value={100} className={classes.successIcon} />}
               {upload.status === 'error' && <LinearProgress variant="determinate" value={0} className={classes.errorProgress} />}
+              <Typography variant="body2" color="text.secondary">
+                {upload.absoluteFolderPath}
+              </Typography>
             </ListItemText>
           </ListItemButton>
           <Typography variant="body2" color="text.secondary">

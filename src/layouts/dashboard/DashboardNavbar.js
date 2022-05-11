@@ -1,4 +1,4 @@
-import {React, useState} from 'react';
+import {React, useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
@@ -15,6 +15,7 @@ import NotificationsPopover from './NotificationsPopover';
 import { useSkynetManager } from '../../contexts';
 import UploaderElement from "../../components/upload/UploaderElement";
 import { makeStyles } from '@mui/styles';
+import { useAction } from '../../contexts';
 
 // ----------------------------------------------------------------------
 
@@ -79,7 +80,12 @@ export default function DashboardNavbar({ onOpenSidebar }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [folderPath, setFolderPath] = useState("/localhost/"); // this needs to be dynamic
+  //const [folderPath, setFolderPath] = useState("/localhost/home"); // this needs to be dynamic
+  const { folderPath } = useAction();
+
+  useEffect(() => {
+    console.log(folderPath);
+  }, [folderPath])
   return (
     <RootStyle>
       <ToolbarStyle>
