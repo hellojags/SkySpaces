@@ -133,6 +133,7 @@ export default function DashboardNavbar({ onOpenSidebar }) {
           key={upload.id}
           upload={upload}
           folderPath={folderPath}
+          open={open}
           />
           ))}
           <CardActions className={classes.actionButton}>

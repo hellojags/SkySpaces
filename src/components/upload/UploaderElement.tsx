@@ -107,8 +107,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.grey[500]
   },
 }));
-export default function UploaderElement({ upload, folderPath }) {
+export default function UploaderElement({ upload, folderPath, open }) {
   const classes = useStyles();
+  const [absolutePath, setAbsolutePath] = React.useState(upload.absoluteFolderPath);
+  const [screenWidth, setScreenWidth] = React.useState(window.screen.availWidth);
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -182,6 +184,41 @@ export default function UploaderElement({ upload, folderPath }) {
     // }
   }, [onUploadStateChange, upload, retryTimeout]);
 
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+    function autoResize() {
+        setScreenWidth(window.screen.availWidth);
+    }
+    window.addEventListener('resize', autoResize);
+    // This is likely unnecessary, as the initial state should capture
+    // the size, however if a resize occurs between initial state set by
+    // React and before the event listener is attached, this
+    // will just make sure it captures that.
+    autoResize();
+    // Return a function to disconnect the event listener
+    return () => window.removeEventListener('resize', autoResize);
+}, [])
+
+  const ellipsisAbsolutePath = () => {
+    if (screenWidth < 420 && upload.absoluteFolderPath.length > 36) {
+      setAbsolutePath(upload.absoluteFolderPath.substr(upload.absoluteFolderPath.length-33, upload.absoluteFolderPath.length));
+    } else if (screenWidth > 400 && screenWidth < 767 && upload.absoluteFolderPath.length > 71) {
+      setAbsolutePath(upload.absoluteFolderPath.substr(upload.absoluteFolderPath.length-68, upload.absoluteFolderPath.length));
+    } else if (screenWidth > 767 && screenWidth < 1024 && upload.absoluteFolderPath.length > 91) {
+      setAbsolutePath(upload.absoluteFolderPath.substr(upload.absoluteFolderPath.length-85, upload.absoluteFolderPath.length));
+    } else {
+      setAbsolutePath(upload.absoluteFolderPath.substr(upload.absoluteFolderPath.length-72, upload.absoluteFolderPath.length));
+    }
+    console.log(absolutePath.length);
+  }
+
+  React.useEffect(() => {
+    console.log(screenWidth, absolutePath);
+    ellipsisAbsolutePath();
+  }, [open, screenWidth]);
+
   return (
     <Card sx={{ borderRadius: 0 }}>
       <CardContent sx={{ padding: 0 }}>
@@ -232,7 +269,7 @@ export default function UploaderElement({ upload, folderPath }) {
               {upload.status === 'complete' && <LinearProgress variant="determinate" value={100} className={classes.successIcon} />}
               {upload.status === 'error' && <LinearProgress variant="determinate" value={0} className={classes.errorProgress} />}
               <Typography variant="body2" color="text.secondary">
-                {upload.absoluteFolderPath}
+                ...{absolutePath}
               </Typography>
             </ListItemText>
           </ListItemButton>
