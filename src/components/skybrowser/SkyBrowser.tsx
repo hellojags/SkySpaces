@@ -85,6 +85,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const [newFolderName, setNewFolderName] = useState('');
   const { actionsMsg, setActionMsg, setCurrentFolderPath } = useAction();
   const [open, setOpen] = useState(false);
+  const [createdFolders, setCreatedFolders] = useState([]);
 
   const {
     mode,
@@ -252,7 +253,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       // If file is uploaded at current path, display file
       if (folderPath === completedUpload.absoluteFolderPath) {
         // convert Upload object to Chonky FileData Object for rendering in browser
-        const chonkyFileData = convert2ChonkyFileData(completedUpload, false);
+        const chonkyFileData = convert2ChonkyFileData(completedUpload, false, folderPath);
         fileBrowserRef.current.requestFileAction(
           addUploadedFiles,
           chonkyFileData
@@ -260,15 +261,18 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       }
       //If folder is uploaded at current path, display folder
       const tempRemainingPath = completedUpload.absoluteFolderPath.replace(folderPath, "").split("/");
-      if (tempRemainingPath.length === 3) {
+      if (tempRemainingPath.length >= 3 ) {
         // TODO: add directory parameter in convert2ChonkyFileData
-        console.log(`upload.absoluteFolderPath.split ${completedUpload.absoluteFolderPath.split("/")}`)
-        const chonkyFileData = convert2ChonkyFileData(completedUpload, true);
+        console.log(`upload.absoluteFolderPath.split ${completedUpload.absoluteFolderPath.split("/")}`);
+        const chonkyFileData = convert2ChonkyFileData(completedUpload, true, tempRemainingPath[1]);
         console.log(chonkyFileData);
-        fileBrowserRef.current.requestFileAction(
-          ChonkyActions.CreateFolder,
-          chonkyFileData
-        );
+        if(createdFolders.indexOf(chonkyFileData[0].name) < 0) {
+          setCreatedFolders( createdFolders => [...createdFolders, chonkyFileData.name]);
+          fileBrowserRef.current.requestFileAction(
+            ChonkyActions.CreateFolder,
+            chonkyFileData
+          );
+        }
       }
 
       // if (
@@ -316,6 +320,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   }, [currentFolderId, fileMap]);
 
   React.useEffect(() => {
+    setCreatedFolders([]);
     // get Directory Index data from SkyFS
     (async () => {
       console.log(
