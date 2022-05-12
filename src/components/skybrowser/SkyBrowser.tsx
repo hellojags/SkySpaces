@@ -24,6 +24,10 @@ import {
   FileHelper,
   FullFileBrowser,
   setChonkyDefaults,
+  FileBrowser,
+  FileNavbar,
+  FileToolbar,
+  FileList,
 } from "@skynethubio/web3-file-explorer";
 import { ChonkyIconFA } from "@skynethubio/web3-file-explorer-icons";
 import { useFileManager } from "../../contexts";
@@ -565,7 +569,20 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
           />
         </Grid>
         <Grid item md={12} lg={12} sx={{ height: '78vh' }}>
-          <FullFileBrowser
+        <FileBrowser ref={fileBrowserRef}
+            files={files}
+            folderChain={folderChain}
+            fileActions={customFileActions}
+            onFileAction={handleFileAction}
+            thumbnailGenerator={thumbnailGenerator}
+            darkMode={false}
+            defaultFileViewActionId={"enable_list_view"}
+            {...props}>
+          <FileNavbar />
+          {/* <FileToolbar /> */}
+          <FileList />
+        </FileBrowser>
+          {/* <FullFileBrowser
             ref={fileBrowserRef}
             files={files}
             folderChain={folderChain}
@@ -575,7 +592,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             darkMode={false}
             defaultFileViewActionId={"enable_list_view"}
             {...props}
-          />
+          /> */}
         </Grid>
         {/* <Grid item lg={12} sx={{ display: "flex" }}>
         {uploads.map((upload) => (

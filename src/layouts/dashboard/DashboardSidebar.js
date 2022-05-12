@@ -101,7 +101,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
           /> */}
           <Box>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Get 100GB of storage for all your files and photos.
+              Get 100GB of storage free for all your files and photos.
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }} gutterBottom paddingBottom={2}>
               <a href="#">Learn more about storage plans.</a>
@@ -111,9 +111,9 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             </Button>
           </Box>
           <Box>
-            <LinearProgress variant="determinate" value={50} />
+            <LinearProgress variant="determinate" value={10} />
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              2.5 Gb of 5Gb used
+              10Gb of 100Gb used
             </Typography>
           </Box>
         </Stack>
