@@ -85,9 +85,11 @@ export function SkynetManagerProvider({ children }: Props) {
       ...files.map((file) => {
         let tempPath = ''
         // prepare file's folder path but will have to check mode if directory or file otherwise below commected logic will create propblem
-        if (file.path[0] !== '/') {
+        if (file.path.indexOf('/') > -1 && file.path[0] !== '/') {
           tempPath = folderPath + '/' + file.path;
-        } 
+        } else {
+          tempPath = folderPath + file.path;
+        }
         //tempPath = folderPath + file.path; // uncomment this logic to file upload
         console.log(tempPath);
         //const absoluteFolderPath = tempPath[tempPath.length -1].join("/");
