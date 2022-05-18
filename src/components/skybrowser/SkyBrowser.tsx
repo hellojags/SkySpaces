@@ -271,7 +271,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
         const chonkyFileData = convert2ChonkyFileData(completedUpload, true, tempRemainingPath[1]);
         console.log(chonkyFileData);
         if(createdFolders.indexOf(chonkyFileData[0].name) < 0) {
-          setCreatedFolders( createdFolders => [...createdFolders, chonkyFileData.name]);
+          setCreatedFolders( createdFolders => [...createdFolders, chonkyFileData[0].name]);
           fileBrowserRef.current.requestFileAction(
             ChonkyActions.CreateFolder,
             chonkyFileData
@@ -408,6 +408,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
               .update(`${folderPath}/${folderName}`)
               .digest("hex");
             createFolder(folderName, folderId);
+            setNewFolderName('');
           }
         } else if (data.id === ChonkyActions.UploadFiles.id) {
           console.log("getUploads() " + getUploads().length);
@@ -503,6 +504,8 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     handleCallbackFromAction(actionsMsg);
     clearActionMsg();
   }, [actionsMsg, clearActionMsg]);
+
+  
 
   const handleCallbackFromAction = (msgFromChild) => {
     let chonkyCustomFileMap;

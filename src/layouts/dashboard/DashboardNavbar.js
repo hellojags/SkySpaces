@@ -1,10 +1,10 @@
-import {React, useState, useEffect} from 'react';
+import { React, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
 // material
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton, Button, Modal, Card, CardHeader, CardContent,CardActions, Typography, CircularProgress } from '@mui/material';
+import { Box, Stack, AppBar, Toolbar, IconButton, Button, Modal, Card, CardHeader, CardContent, CardActions, Typography, CircularProgress } from '@mui/material';
 // components
 import { MHidden } from '../../components/@material-extend';
 //
@@ -56,8 +56,8 @@ DashboardNavbar.propTypes = {
   onOpenSidebar: PropTypes.func
 };
 const styles = makeStyles((theme) => ({
-  modalStyle:{
-    overflow:'auto',
+  modalStyle: {
+    overflow: 'auto',
     maxHeight: 500,
     width: '90%',
     ['@media (min-width: 992px)']: {
@@ -71,6 +71,12 @@ const styles = makeStyles((theme) => ({
     width: '15px !important',
     height: '17px !important',
     margin: '5px',
+  },
+  hideModal: {
+    visibility: 'hidden'
+  },
+  showModal: {
+    visibility: 'visible'
   }
 }));
 
@@ -97,12 +103,14 @@ export default function DashboardNavbar({ onOpenSidebar }) {
 
         <Searchbar />
         <Box sx={{ flexGrow: 1 }} />
-        {uploads.length !== 0 && <Button variant="text" onClick={handleOpen}>
-          <CircularProgress className={classes.spinner} />
-          <Typography>
-            Uploading {uploads.length} items
-          </Typography>
-        </Button>}
+        {uploads.length !== 0 &&
+          <Button variant="text" onClick={handleOpen}>
+            <CircularProgress className={classes.spinner} />
+            <Typography>
+              Uploading {uploads.length} items
+            </Typography>
+          </Button>
+        }
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           <LanguagePopover />
           <NotificationsPopover />
@@ -110,38 +118,39 @@ export default function DashboardNavbar({ onOpenSidebar }) {
         </Stack>
       </ToolbarStyle>
       <Modal
-        open={open}
+        open={true}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        className={open ? classes.showModal : classes.hideModal}
       >
         <Box sx={style} className={classes.modalStyle}>
           <CardHeader title="Progress" />
-        {/* <Card>
+          {/* <Card>
         </Card> */}
-        {uploads.length === 0 && 
-          <Card>
-            <CardContent>
-              <Typography>
-                Currently no upload is in progress.
-              </Typography>
-            </CardContent>
-          </Card>
-        }
-        {uploads.map((upload) => (
-          <UploaderElement
-          key={upload.id}
-          upload={upload}
-          folderPath={folderPath}
-          open={open}
-          />
+          {uploads.length === 0 &&
+            <Card>
+              <CardContent>
+                <Typography>
+                  Currently no upload is in progress.
+                </Typography>
+              </CardContent>
+            </Card>
+          }
+          {uploads.map((upload) => (
+            <UploaderElement
+              key={upload.id}
+              upload={upload}
+              folderPath={folderPath}
+              open={open}
+            />
           ))}
           <CardActions className={classes.actionButton}>
             <Button variant="contained" onClick={handleClose} >
               Close
             </Button>
           </CardActions>
-          </Box>
+        </Box>
       </Modal>
     </RootStyle>
   );
