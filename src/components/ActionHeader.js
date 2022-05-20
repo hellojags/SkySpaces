@@ -38,11 +38,12 @@ export function ActionHeader(props) {
         props.parentCallBack(true);
     };
 
-    const { setActionMsg } = useAction();
-    const [inMyFiles, setInMyFiles] = React.useState(false);
+    const { setActionMsg, selectedFiles } = useAction();
+    const [inMyFiles, setInMyFiles] = React.useState(true);
     const [inPhotos, setInPhotos] = React.useState(false);
-    const [selected, setSelected] = React.useState(true);
+    const [selected, setSelected] = React.useState(false);
     const [selectedChip, setSelectedChip] = React.useState(0);
+    const [totalFiles, setTotalFiles] = React.useState(0);
     const [chipData, setChipData] = React.useState([
         { key: 0, label: 'All Photos' },
         { key: 1, label: 'Albums' },
@@ -55,6 +56,17 @@ export function ActionHeader(props) {
         //props.parentCallBack(action);
         setActionMsg(action);
     }
+
+    React.useEffect(() => {
+        if (selectedFiles.length > 0) {
+            setTotalFiles(selectedFiles.length);
+            setInMyFiles(false);
+            setSelected(true);
+        } else {
+            setInMyFiles(true);
+            setSelected(false);
+        }
+    }, [selectedFiles])
     return (
         <Toolbar className={classes.toolbarCss} disableGutters={true} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             {inMyFiles &&
@@ -104,7 +116,7 @@ export function ActionHeader(props) {
                         <MenuButton buttonName="Sort" items={['Name', 'Modified', 'File Size']} order={['Ascending', 'Descending']} />
                     }
                     {selected &&
-                        <Button startIcon={<Icon icon="iconoir:cancel" />}>1 selected</Button>
+                        <Button startIcon={<Icon icon="iconoir:cancel" />}>{totalFiles} selected</Button>
                     }
                     <MenuButton buttonName="List" items={['List', 'Tiles']} />
                     <IconButton aria-label="info" sx={{ color: '#00AB55' }} onClick={handleDrawerOpen} >

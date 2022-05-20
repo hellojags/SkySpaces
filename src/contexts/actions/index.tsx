@@ -14,6 +14,7 @@ import React, {
     setActionMsg: (msg) => void;
     folderPath: string;
     setCurrentFolderPath: (folderPath)=> void;
+    setSelectedFile: (file) => void;
   };
   
   //Create Skynet Context
@@ -29,6 +30,7 @@ import React, {
   export function ActionProvider({ children }: Props) {
     const [actionsMsg, setActionsMsg] = useState('');
     const [folderPath, setFolderPath] = useState('/localhost/');
+    const [selectedFiles, setSelectedFiles] = useState([]);
     //const fileSystemDAC = new FileSystemDAC() as any;
     // On initial run, start initialization of MySky
     useEffect(() => {
@@ -42,12 +44,21 @@ import React, {
       setFolderPath(msg);
       console.log(folderPath);
     };
+
+    const setSelectedFile = (file) => {
+      let files = [];
+      files.push(file);
+      setSelectedFiles([...file]);
+      console.log(selectedFiles);
+    }
     // eslint-disable-next-line
     const value = {
       actionsMsg,
       setActionMsg,
       folderPath,
-      setCurrentFolderPath
+      setCurrentFolderPath,
+      setSelectedFile,
+      selectedFiles
     };
     return (
       <ActionContext.Provider value={value}>{children}</ActionContext.Provider>

@@ -87,7 +87,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const folderNameRef: any = React.useRef(); // Reference to Chonky Browser component
   const [folderPath, setFolderPath] = useState("/localhost/");
   const [newFolderName, setNewFolderName] = useState('');
-  const { actionsMsg, setActionMsg, setCurrentFolderPath } = useAction();
+  const { actionsMsg, setActionMsg, setCurrentFolderPath, setSelectedFile } = useAction();
   const [open, setOpen] = useState(false);
   const [createdFolders, setCreatedFolders] = useState([]);
 
@@ -370,7 +370,9 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     return useCallback(
       //(data: ChonkyFileActionData) => {
       (data: any) => {
-        console.log(data.state.selectedFiles!);
+        if (data.id === 'change_selection') {
+          setSelectedFile(data.state.selectedFilesForAction);
+        }
         if (data.id === ChonkyActions.OpenFiles.id) {
           const { targetFile, files } = data.payload;
           const fileToOpen = targetFile ?? files[0];
@@ -549,7 +551,6 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             alert('Please download one file at a time');
             return;
           }
-          console.log(directoryIndexSkyFS.files[selectedFiles[0].name]);
         });
         const selectedFile = directoryIndexSkyFS.files[selectedFiles[0].name];
         const resp = await downloadFileData(selectedFile, selectedFile.mimeType, selectedFile.name);
