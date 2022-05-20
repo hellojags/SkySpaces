@@ -39,9 +39,9 @@ export function ActionHeader(props) {
     };
 
     const { setActionMsg } = useAction();
-    const [inMyFiles, setInMyFiles] = React.useState(true);
+    const [inMyFiles, setInMyFiles] = React.useState(false);
     const [inPhotos, setInPhotos] = React.useState(false);
-    const [selected, setSelected] = React.useState(false);
+    const [selected, setSelected] = React.useState(true);
     const [selectedChip, setSelectedChip] = React.useState(0);
     const [chipData, setChipData] = React.useState([
         { key: 0, label: 'All Photos' },
@@ -65,6 +65,7 @@ export function ActionHeader(props) {
             {selected &&
                 <Grid>
                     <Button onClick={() => actionHandler('Share')} startIcon={<Icon icon="fa6-regular:share-from-square" />}>Share</Button>
+                    <Button onClick={() => actionHandler('Download')} startIcon={<Icon icon="clarity:download-line" />}>Download</Button>
                     <Button onClick={() => actionHandler('Delete')} startIcon={<Icon icon="bi:trash" />}>Delete</Button>
                     <Button onClick={() => actionHandler('Move To')} startIcon={<Icon icon="carbon:folder-move-to" />}>Move to</Button>
                     <Button onClick={() => actionHandler('Copy To')} startIcon={<Icon icon="cil:copy" />}>Copy to</Button>

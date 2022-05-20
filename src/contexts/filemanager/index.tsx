@@ -17,7 +17,7 @@ type State = {
     fileName: string,
     onProgress?: (progress: number) => void
   ) => Promise<FileData>; // It will return FileData object whihc contains SkyLink of uploaded data
-  downloadFileData: (fileData: FileData, mimeType: string) => Promise<Blob>; // returns full binary file
+  downloadFileData: (selectedFile: any, mimeType: string, fileName: string) => Promise<Blob>; // returns full binary file
   createDirectory: (
     path: string,
     name: string
@@ -152,9 +152,25 @@ export function FileManagerProvider({ children }: Props) {
   };
 
   const downloadFileData = async (
-    fileData: FileData,
-    mimeType: string
+    selectedFile: any,
+    mimeType: string,
+    fileName: string
   ): Promise<Blob> => {
+
+    let fileData: FileData;
+    if (selectedFile) {
+      fileData = {
+        chunkSize: selectedFile.file.chunkSize,
+        encryptionType: selectedFile.file.encryptionType,
+        ext: selectedFile.ext,
+        hash: selectedFile.file.hash,
+        key: selectedFile.file.key,
+        padding: selectedFile.file.padding,
+        size: selectedFile.file.size,
+        ts: selectedFile.file.ts,
+        url: selectedFile.file.url,
+      };
+    }
     // const fileData: FileData = {
     //   size: 23,
     //   chunkSize: 16777216,
@@ -180,7 +196,7 @@ export function FileManagerProvider({ children }: Props) {
     );
     const file: Blob = await fileSystemDAC.downloadFileData(fileData, mimeType);
     console.log(`downloadFileData : file.size -> ${file?.size}`);
-    await save(file, "test.txt");
+    await save(file, fileName);
     console.log(`<- downloadFileData : End`);
     return file;
   };

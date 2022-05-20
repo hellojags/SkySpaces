@@ -9,7 +9,7 @@ import {
 import plusFill from "@iconify/icons-eva/plus-fill";
 import { Link as RouterLink } from "react-router-dom";
 // material
-import { Button, Container, Grid, Box, Modal, Card, CardHeader, CardContent, CardActions,FormControl, Input, InputLabel, Typography, TextField } from "@mui/material";
+import { Button, Container, Grid, Box, Modal, Card, CardHeader, CardContent, CardActions, FormControl, Input, InputLabel, Typography, TextField } from "@mui/material";
 import { height } from "@mui/system";
 import { createHash } from "crypto";
 // Chonky
@@ -84,7 +84,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const classes = styles();
   const inputFilesRef: any = useRef(); // Reference to Input type File Picker
   const fileBrowserRef = React.useRef<FileBrowserHandle>(null); // Reference to Chonky Browser component
-  const folderNameRef:any = React.useRef(); // Reference to Chonky Browser component
+  const folderNameRef: any = React.useRef(); // Reference to Chonky Browser component
   const [folderPath, setFolderPath] = useState("/localhost/");
   const [newFolderName, setNewFolderName] = useState('');
   const { actionsMsg, setActionMsg, setCurrentFolderPath } = useAction();
@@ -142,7 +142,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   //   if (mode === "file") inputElement.removeAttribute("webkitdirectory");
   // }, [inputElement, mode]);
 
-  const { getDirectoryIndex, createDirectory } = useFileManager();
+  const { getDirectoryIndex, createDirectory, downloadFileData } = useFileManager();
   const {
     fileMap,
     currentFolderId,
@@ -265,13 +265,13 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       }
       //If folder is uploaded at current path, display folder
       const tempRemainingPath = completedUpload.absoluteFolderPath.replace(folderPath, "").split("/");
-      if (tempRemainingPath.length >= 3 ) {
+      if (tempRemainingPath.length >= 3) {
         // TODO: add directory parameter in convert2ChonkyFileData
         console.log(`upload.absoluteFolderPath.split ${completedUpload.absoluteFolderPath.split("/")}`);
         const chonkyFileData = convert2ChonkyFileData(completedUpload, true, tempRemainingPath[1]);
         console.log(chonkyFileData);
-        if(createdFolders.indexOf(chonkyFileData[0].name) < 0) {
-          setCreatedFolders( createdFolders => [...createdFolders, chonkyFileData[0].name]);
+        if (createdFolders.indexOf(chonkyFileData[0].name) < 0) {
+          setCreatedFolders(createdFolders => [...createdFolders, chonkyFileData[0].name]);
           fileBrowserRef.current.requestFileAction(
             ChonkyActions.CreateFolder,
             chonkyFileData
@@ -370,6 +370,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     return useCallback(
       //(data: ChonkyFileActionData) => {
       (data: any) => {
+        console.log(data.state.selectedFiles!);
         if (data.id === ChonkyActions.OpenFiles.id) {
           const { targetFile, files } = data.payload;
           const fileToOpen = targetFile ?? files[0];
@@ -505,12 +506,12 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     clearActionMsg();
   }, [actionsMsg, clearActionMsg]);
 
-  
+
 
   const handleCallbackFromAction = (msgFromChild) => {
     let chonkyCustomFileMap;
+    let directoryIndexSkyFS;
     let selectedFiles = [];
-    //(async () => {
     if (msgFromChild === 'Create Folder') {
       setNewFolderName('');
       setOpen(true);
@@ -525,17 +526,35 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       }
       inputFilesRef.current.click();
     }
-    if (msgFromChild === 'Delete') {
-      fileBrowserRef.current.getFileSelection().forEach((value) => {
-        const result = chonkyCustomFileMap.find(obj => {
-          return obj.id === value;
-        })
-        selectedFiles.push(result);
-      });
-      console.log(selectedFiles);
-      handleFileAction(deleteFiles(selectedFiles));
-    }
-    //})();
+    (async () => {
+      directoryIndexSkyFS = await getDirectoryIndex(folderPath);
+      chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
+      if (msgFromChild === 'Delete') {
+        fileBrowserRef.current.getFileSelection().forEach((value) => {
+          const result = chonkyCustomFileMap.find(obj => {
+            return obj.id === value;
+          })
+          selectedFiles.push(result);
+        });
+        console.log(selectedFiles);
+        handleFileAction(deleteFiles(selectedFiles));
+      }
+      if (msgFromChild === 'Download') {
+        fileBrowserRef.current.getFileSelection().forEach((value) => {
+          const result = chonkyCustomFileMap.find(obj => {
+            return obj.id === value;
+          })
+          selectedFiles.push(result);
+          if (selectedFiles.length > 1) {
+            alert('Please download one file at a time');
+            return;
+          }
+          console.log(directoryIndexSkyFS.files[selectedFiles[0].name]);
+        });
+        const selectedFile = directoryIndexSkyFS.files[selectedFiles[0].name];
+        const resp = await downloadFileData(selectedFile, selectedFile.mimeType, selectedFile.name);
+      }
+    })();
   }
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -544,7 +563,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   };
 
   const getFolderName = () => {
-    if(folderNameRef.current) {
+    if (folderNameRef.current) {
       setNewFolderName(folderNameRef.current.firstChild.value);
     }
     setOpen(false);
@@ -572,7 +591,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
           />
         </Grid>
         <Grid item md={12} lg={12} sx={{ height: '78vh' }}>
-        <FileBrowser ref={fileBrowserRef}
+          <FileBrowser ref={fileBrowserRef}
             files={files}
             folderChain={folderChain}
             fileActions={customFileActions}
@@ -581,10 +600,10 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             darkMode={false}
             defaultFileViewActionId={"enable_list_view"}
             {...props}>
-          <FileNavbar />
-          {/* <FileToolbar /> */}
-          <FileList />
-        </FileBrowser>
+            <FileNavbar />
+            {/* <FileToolbar /> */}
+            <FileList />
+          </FileBrowser>
           {/* <FullFileBrowser
             ref={fileBrowserRef}
             files={files}

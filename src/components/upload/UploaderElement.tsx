@@ -208,10 +208,11 @@ export default function UploaderElement({ upload, folderPath, open }) {
       setAbsolutePath(upload.absoluteFolderPath.substr(upload.absoluteFolderPath.length-68, upload.absoluteFolderPath.length));
     } else if (screenWidth > 767 && screenWidth < 1024 && upload.absoluteFolderPath.length > 91) {
       setAbsolutePath(upload.absoluteFolderPath.substr(upload.absoluteFolderPath.length-85, upload.absoluteFolderPath.length));
-    } else {
+    } else if (screenWidth >  1024 && upload.absoluteFolderPath.length > 75){
       setAbsolutePath(upload.absoluteFolderPath.substr(upload.absoluteFolderPath.length-72, upload.absoluteFolderPath.length));
+    } else {
+      setAbsolutePath(upload.absoluteFolderPath);
     }
-    console.log(absolutePath.length);
   }
 
   React.useEffect(() => {
@@ -269,7 +270,7 @@ export default function UploaderElement({ upload, folderPath, open }) {
               {upload.status === 'complete' && <LinearProgress variant="determinate" value={100} className={classes.successIcon} />}
               {upload.status === 'error' && <LinearProgress variant="determinate" value={0} className={classes.errorProgress} />}
               <Typography variant="body2" color="text.secondary">
-                ...{absolutePath}
+                {upload.absoluteFolderPath !== absolutePath ? `...${absolutePath}` : upload.absoluteFolderPath }
               </Typography>
             </ListItemText>
           </ListItemButton>
