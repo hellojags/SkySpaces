@@ -58,7 +58,6 @@ DashboardNavbar.propTypes = {
 const styles = makeStyles((theme) => ({
   modalStyle: {
     overflow: 'auto',
-    maxHeight: 500,
     width: '90%',
     ['@media (min-width: 992px)']: {
       width: '60%'
@@ -126,25 +125,23 @@ export default function DashboardNavbar({ onOpenSidebar }) {
       >
         <Box sx={style} className={classes.modalStyle}>
           <CardHeader title="Progress" />
-          {/* <Card>
-        </Card> */}
-          {uploads.length === 0 &&
-            <Card>
-              <CardContent>
-                <Typography>
-                  Currently no upload is in progress.
-                </Typography>
-              </CardContent>
-            </Card>
-          }
-          {uploads.map((upload) => (
-            <UploaderElement
-              key={upload.id}
-              upload={upload}
-              folderPath={folderPath}
-              open={open}
-            />
-          ))}
+          <Card sx={{ maxHeight: 500, overflow: 'auto', padding: '0px 20px' }}>
+            {/* <CardContent> */}
+            {uploads.length === 0 &&
+              <Typography>
+                Currently no upload is in progress.
+              </Typography>
+            }
+            {uploads.map((upload) => (
+              <UploaderElement
+                key={upload.id}
+                upload={upload}
+                folderPath={folderPath}
+                open={open}
+              />
+            ))}
+            {/* </CardContent> */}
+          </Card>
           <CardActions className={classes.actionButton}>
             <Button variant="contained" onClick={handleClose} >
               Close

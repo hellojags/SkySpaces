@@ -13,6 +13,7 @@ import { MHidden } from '../../components/@material-extend';
 import { Icon } from '@iconify/react';
 import sidebarConfig from './SidebarConfig';
 import account from '../../_mocks_/account';
+import { getUserPlanDetails, getUserStatsDetails } from '../../api/plan-api';
 
 import { useSkynetManager } from '../../contexts';
 // ----------------------------------------------------------------------
@@ -43,13 +44,25 @@ DashboardSidebar.propTypes = {
 
 export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
   const { pathname } = useLocation();
-  const {uploads} = useSkynetManager();
+  const { uploads } = useSkynetManager();
   useEffect(() => {
     if (isOpenSidebar) {
       onCloseSidebar();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  useEffect(() => {
+    getUserPlanDetails().then(res => {
+      console.log(res);
+      return res;
+    }).catch((error) => {
+        alert(error);
+        return error;
+      });
+
+    getUserStatsDetails();
+  }, [])
 
   const renderContent = (
     <Scrollbar
