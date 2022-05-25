@@ -196,7 +196,7 @@ export function FileManagerProvider({ children }: Props) {
     );
     const file: Blob = await fileSystemDAC.downloadFileData(fileData, mimeType);
     console.log(`downloadFileData : file.size -> ${file?.size}`);
-    await save(file, fileName);
+    //await save(file, fileName);
     console.log(`<- downloadFileData : End`);
     return file;
   };

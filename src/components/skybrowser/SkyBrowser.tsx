@@ -12,6 +12,8 @@ import { Link as RouterLink } from "react-router-dom";
 import { Button, Container, Grid, Box, Modal, Card, CardHeader, CardContent, CardActions, FormControl, Input, InputLabel, Typography, TextField } from "@mui/material";
 import { height } from "@mui/system";
 import { createHash } from "crypto";
+import save from "save-file";
+import JSZip from 'jszip';
 // Chonky
 import {
   ChonkyActions,
@@ -529,6 +531,9 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       inputFilesRef.current.click();
     }
     (async () => {
+      let zip = new JSZip();
+      let count = 0;
+      let zipFilename = "Files.zip";
       directoryIndexSkyFS = await getDirectoryIndex(folderPath);
       chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
       if (msgFromChild === 'Delete') {
@@ -547,13 +552,24 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             return obj.id === value;
           })
           selectedFiles.push(result);
-          if (selectedFiles.length > 1) {
-            alert('Please download one file at a time');
-            return;
-          }
         });
-        const selectedFile = directoryIndexSkyFS.files[selectedFiles[0].name];
-        const resp = await downloadFileData(selectedFile, selectedFile.mimeType, selectedFile.name);
+        if (selectedFiles.length === 1) {
+          const selectedFile = directoryIndexSkyFS.files[selectedFiles[0].name];
+          const resp = await downloadFileData(selectedFile, selectedFile.mimeType, selectedFile.name);
+          await save(resp, selectedFile.name);
+        } else {
+          selectedFiles.forEach(async (file, i) => {
+            const selectedFile = directoryIndexSkyFS.files[file.name];
+            let blob = await downloadFileData(selectedFile, selectedFile.mimeType, selectedFile.name);
+            zip.file(file.name, blob, { binary: true });
+            count++;
+            if (count === selectedFiles.length) {
+              zip.generateAsync({ type: 'blob' }).then(function (content) {
+                save(content, zipFilename);
+              });
+            }
+          });
+        }
       }
     })();
   }
