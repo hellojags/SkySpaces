@@ -1,0 +1,30 @@
+name: Deploy to Skynet
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+
+      - run: npm install --force
+      - run: npm run-script build
+
+      - name: "Deploy to Skynet"
+        uses: SkynetLabs/deploy-to-skynet-action@v2
+        with:
+          upload-dir: build
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          try-files: index.html /index.html
+          not-found-page: 404.html
+          portal-url: skynetpro.net
+          skynet-api-key: ${{ secrets.SKYNET_API_KEY || '' }} 
+          registry-seed: ${{ secrets.SKYNET_REGISTRY_SEED || '' }}
+          registry-datakey: ${{ secrets.REGISTRY_DATAKEY || '' }}
