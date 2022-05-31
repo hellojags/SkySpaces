@@ -6,9 +6,9 @@
   "private": false,
   "scripts": {
     "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "test": "DISABLE_ESLINT_PLUGIN=true react-scripts test",
+    "eject": "DISABLE_ESLINT_PLUGIN=true react-scripts eject",
     "lint": "eslint --ext .js,.jsx,.tsx ./src",
     "lint:fix": "eslint --fix --ext .js,.jsx,.tsx ./src"
   },
