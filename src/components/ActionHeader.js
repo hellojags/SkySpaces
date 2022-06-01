@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { IconButton, ListItem, Grid, Chip, Paper, Toolbar, MenuItem, Button, Menu, Fade, Drawer, Divider } from "@mui/material";
+import { IconButton, ListItem, Grid, Chip, Paper, Toolbar, Button } from "@mui/material";
 import { Icon } from '@iconify/react';
-import { createTheme, styled, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import MenuButton from './MenuButton';
 import { useAction } from '../contexts'
@@ -42,6 +42,7 @@ export function ActionHeader(props) {
     const [inMyFiles, setInMyFiles] = React.useState(true);
     const [inPhotos, setInPhotos] = React.useState(false);
     const [selected, setSelected] = React.useState(false);
+    const [showInfoButton, setShowInfoButton] = React.useState(false);
     const [selectedChip, setSelectedChip] = React.useState(0);
     const [totalFiles, setTotalFiles] = React.useState(0);
     const [chipData, setChipData] = React.useState([
@@ -58,6 +59,13 @@ export function ActionHeader(props) {
     }
 
     React.useEffect(() => {
+        if (selectedFiles.length === 1 && !selectedFiles[0].isDir) {
+            setShowInfoButton(true);
+        } else {
+            setShowInfoButton(false);
+        }
+        const showInfo = (selectedFiles.length === 1 && !selectedFiles[0].isDir) ? true: false;
+        setShowInfoButton(showInfo);
         if (selectedFiles.length > 0) {
             setTotalFiles(selectedFiles.length);
             setInMyFiles(false);
@@ -119,9 +127,9 @@ export function ActionHeader(props) {
                         <Button startIcon={<Icon icon="iconoir:cancel" />}>{totalFiles} selected</Button>
                     }
                     <MenuButton buttonName="List" items={['List', 'Tiles']} />
-                    <IconButton aria-label="info" sx={{ color: '#00AB55' }} onClick={handleDrawerOpen} >
+                    {showInfoButton && <IconButton aria-label="info" sx={{ color: '#00AB55' }} onClick={handleDrawerOpen} >
                         <Icon icon="bytesize:info" />
-                    </IconButton>
+                    </IconButton>}
                 </Grid>}
 
         </Toolbar>

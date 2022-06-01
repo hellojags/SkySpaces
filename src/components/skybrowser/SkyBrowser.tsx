@@ -30,6 +30,7 @@ import {
   FileNavbar,
   FileToolbar,
   FileList,
+  FileContextMenu
 } from "@skynethubio/web3-file-explorer";
 import { ChonkyIconFA } from "@skynethubio/web3-file-explorer-icons";
 import { useFileManager } from "../../contexts";
@@ -536,23 +537,23 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       let zipFilename = "Files.zip";
       directoryIndexSkyFS = await getDirectoryIndex(folderPath);
       chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
+      fileBrowserRef.current.getFileSelection().forEach((value) => {
+        const result = chonkyCustomFileMap.find(obj => {
+          return obj.id === value;
+        })
+        selectedFiles.push(result);
+      });
       if (msgFromChild === 'Delete') {
-        fileBrowserRef.current.getFileSelection().forEach((value) => {
-          const result = chonkyCustomFileMap.find(obj => {
-            return obj.id === value;
-          })
-          selectedFiles.push(result);
-        });
         console.log(selectedFiles);
         handleFileAction(deleteFiles(selectedFiles));
       }
       if (msgFromChild === 'Download') {
-        fileBrowserRef.current.getFileSelection().forEach((value) => {
+        /* fileBrowserRef.current.getFileSelection().forEach((value) => {
           const result = chonkyCustomFileMap.find(obj => {
             return obj.id === value;
           })
           selectedFiles.push(result);
-        });
+        }); */
         if (selectedFiles.length === 1) {
           const selectedFile = directoryIndexSkyFS.files[selectedFiles[0].name];
           const resp = await downloadFileData(selectedFile, selectedFile.mimeType, selectedFile.name);
@@ -573,6 +574,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       }
     })();
   }
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setNewFolderName('');
@@ -620,6 +622,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
             <FileNavbar />
             {/* <FileToolbar /> */}
             <FileList />
+            <FileContextMenu />
           </FileBrowser>
           {/* <FullFileBrowser
             ref={fileBrowserRef}
