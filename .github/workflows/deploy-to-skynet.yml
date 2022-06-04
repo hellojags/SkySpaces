@@ -24,7 +24,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           try-files: index.html /index.html
           not-found-page: 404.html
-          portal-url: skynetpro.net
+          portal-url: siasky.net
           skynet-api-key: ${{ secrets.SKYNET_API_KEY || '' }} 
           registry-seed: ${{ secrets.SKYNET_REGISTRY_SEED || '' }}
           registry-datakey: ${{ secrets.REGISTRY_DATAKEY || '' }}
