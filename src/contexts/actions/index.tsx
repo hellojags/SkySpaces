@@ -40,8 +40,8 @@ import React, {
       setActionsMsg(msg);
       console.log(actionsMsg);
     };
-    const setCurrentFolderPath = (msg) => {
-      setFolderPath(msg);
+    const setCurrentFolderPath = (path) => {
+      setFolderPath(path);
       console.log(folderPath);
     };
 

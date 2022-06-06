@@ -34,6 +34,8 @@ type State = {
   ) => Promise<IFileSystemDACResponse>;
   getDirectoryIndex: (path: string) => Promise<DirectoryIndex>;
   shareDirectory: (path: string) => Promise<string>;
+  cutFiles: (sourceFilePath: string, targetFilePath: string) => Promise<IFileSystemDACResponse>;
+  copyFiles: (sourceFilePath: string, targetDirectoryPath: string) => Promise<IFileSystemDACResponse>;
 };
 
 //Create Skynet Context
@@ -299,6 +301,19 @@ export function FileManagerProvider({ children }: Props) {
     return response;
   };
 
+  const cutFiles = async (sourceFilePath: string, targetFilePath: string): Promise<IFileSystemDACResponse> => {
+    const response = await fileSystemDAC.moveFile(sourceFilePath, targetFilePath);
+    console.log('source path >>>>', sourceFilePath);
+    console.log('target path >>>>', targetFilePath);
+    return response;
+  };
+  const copyFiles = async (sourceFilePath: string, targetDirectoryPath: string): Promise<IFileSystemDACResponse> => {
+    const response = await fileSystemDAC.copyFile(sourceFilePath, targetDirectoryPath);
+    console.log('source path >>>>', sourceFilePath);
+    console.log('target path >>>>', targetDirectoryPath);
+    return response;
+  };
+
   const value = {
     createFile1,
     uploadFileData,
@@ -308,6 +323,8 @@ export function FileManagerProvider({ children }: Props) {
     updateFile,
     getDirectoryIndex,
     shareDirectory,
+    cutFiles,
+    copyFiles
   };
   return (
     <FileManagerContext.Provider value={value}>
