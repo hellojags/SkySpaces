@@ -22,6 +22,5 @@ jobs:
         with:
           upload-dir: build
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          portal-url: siasky.net
           registry-seed: ${{ secrets.SKYNET_REGISTRY_SEED || '' }}
           registry-datakey: ${{ secrets.REGISTRY_DATAKEY || '' }}
