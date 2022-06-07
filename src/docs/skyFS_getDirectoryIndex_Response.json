@@ -1,0 +1,69 @@
+{
+    "$schema": "https://skystandards.hns.siasky.net/draft-01/directoryIndex.schema.json",
+    "directories": {},
+    "files": {
+        "IMG_6635_12.jpeg": {
+            "created": 1645477640366,
+            "file": {
+                "size": 3900446,
+                "chunkSize": 1048576,
+                "padding": 0,
+                "encryptionType": "AEAD_XCHACHA20_POLY1305",
+                "hash": "122078437ebadf205b669d790d68740d8dff696e28d50e6eb2b2ca9407ec5b37380c",
+                "key": "inyaVGJXDoeVFijNZ4wF4Y6QSMYPSZ4uTuWFm8Z46UU=",
+                "ts": 1645477640366,
+                "url": "sia://_Bknpjbxsj_jeFxLSwGlIzSu3nD_zE9oTqE13j_kCXvD7w"
+            },
+            "history": {},
+            "mimeType": "image/jpeg",
+            "ext": {
+                "uploader": "fs-dac.hns:1"
+            },
+            "modified": 1645477640366,
+            "name": "IMG_6635_12.jpeg",
+            "version": 0
+        },
+        "IMG_6603.jpeg": {
+            "created": 1645506183762,
+            "file": {
+                "size": 2197947,
+                "chunkSize": 1048576,
+                "padding": 0,
+                "encryptionType": "AEAD_XCHACHA20_POLY1305",
+                "hash": "12205ed893c85dd0e09c91d43aa0919c322f857b1896fefa099273267bae75f7c727",
+                "key": "Oq5wCnta-53yD701np8DpMKOkakHTIj-IPUuOgyHDp8=",
+                "ts": 1645506183762,
+                "url": "sia://_AG0ibHlBq7U1WriK7l2tDN27Vnvsk9tNuK977eoGWQTig"
+            },
+            "history": {},
+            "mimeType": "image/jpeg",
+            "ext": {
+                "uploader": "fs-dac.hns:1"
+            },
+            "modified": 1645506183762,
+            "name": "IMG_6603.jpeg",
+            "version": 0
+        },
+        "IMG_6610.JPG": {
+            "created": 1645506360635,
+            "file": {
+                "size": 2134681,
+                "chunkSize": 1048576,
+                "padding": 0,
+                "encryptionType": "AEAD_XCHACHA20_POLY1305",
+                "hash": "1220b3c97d2bcf6dd2bfa54aea4adad2be63f2310fa7a0f468cecad8b0169602cfb1",
+                "key": "9L3wTquPnQiMNm6nB6d6N-sbXyPV8ngBSKrL5X-JPDQ=",
+                "ts": 1645506360635,
+                "url": "sia://_AHbUupk93K9Uqko9pvv7dX9lxJcHmRCCT9hrr_oCkjBzw"
+            },
+            "history": {},
+            "mimeType": "image/jpeg",
+            "ext": {
+                "uploader": "fs-dac.hns:1"
+            },
+            "modified": 1645506360635,
+            "name": "IMG_6610.JPG",
+            "version": 0
+        }
+    }
+}

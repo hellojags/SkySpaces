@@ -1,0 +1,12 @@
+{
+    "rootFolderId": "qwerty123456",
+    "fileMap": {
+        "qwerty123456": {
+            "id": "qwerty123456",
+            "name": "localhost",
+            "isDir": true,
+            "childrenIds": [],
+            "childrenCount": 0
+        }
+    }
+}
