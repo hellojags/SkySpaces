@@ -17,7 +17,7 @@ type State = {
     fileName: string,
     onProgress?: (progress: number) => void
   ) => Promise<FileData>; // It will return FileData object whihc contains SkyLink of uploaded data
-  downloadFileData: (fileData: FileData, mimeType: string) => Promise<Blob>; // returns full binary file
+  downloadFileData: (selectedFile: any, mimeType: string, fileName: string) => Promise<Blob>; // returns full binary file
   createDirectory: (
     path: string,
     name: string
@@ -34,6 +34,8 @@ type State = {
   ) => Promise<IFileSystemDACResponse>;
   getDirectoryIndex: (path: string) => Promise<DirectoryIndex>;
   shareDirectory: (path: string) => Promise<string>;
+  cutFiles: (sourceFilePath: string, targetFilePath: string) => Promise<IFileSystemDACResponse>;
+  copyFiles: (sourceFilePath: string, targetDirectoryPath: string) => Promise<IFileSystemDACResponse>;
 };
 
 //Create Skynet Context
@@ -95,7 +97,8 @@ export function FileManagerProvider({ children }: Props) {
     onProgress?: (progress: number) => void
   ): Promise<any> => {
     try {
-      const filewithpath: FileWithPath = file;
+      //const filewithpath: FileWithPath = file;
+      const filewithpath: FileWithPath = {...file, path: file.path[0] !== '/' ? `/${file.path}` : file.path};
       // Check if directory exist at a file path, if not create directory structure before uploading a file
       await checkAndCreateDirectoryRecursively(
         directoryPath,
@@ -151,9 +154,25 @@ export function FileManagerProvider({ children }: Props) {
   };
 
   const downloadFileData = async (
-    fileData: FileData,
-    mimeType: string
+    selectedFile: any,
+    mimeType: string,
+    fileName: string
   ): Promise<Blob> => {
+
+    let fileData: FileData;
+    if (selectedFile) {
+      fileData = {
+        chunkSize: selectedFile.file.chunkSize,
+        encryptionType: selectedFile.file.encryptionType,
+        ext: selectedFile.ext,
+        hash: selectedFile.file.hash,
+        key: selectedFile.file.key,
+        padding: selectedFile.file.padding,
+        size: selectedFile.file.size,
+        ts: selectedFile.file.ts,
+        url: selectedFile.file.url,
+      };
+    }
     // const fileData: FileData = {
     //   size: 23,
     //   chunkSize: 16777216,
@@ -179,7 +198,7 @@ export function FileManagerProvider({ children }: Props) {
     );
     const file: Blob = await fileSystemDAC.downloadFileData(fileData, mimeType);
     console.log(`downloadFileData : file.size -> ${file?.size}`);
-    await save(file, "test.txt");
+    //await save(file, fileName);
     console.log(`<- downloadFileData : End`);
     return file;
   };
@@ -282,6 +301,19 @@ export function FileManagerProvider({ children }: Props) {
     return response;
   };
 
+  const cutFiles = async (sourceFilePath: string, targetFilePath: string): Promise<IFileSystemDACResponse> => {
+    const response = await fileSystemDAC.moveFile(sourceFilePath, targetFilePath);
+    console.log('source path >>>>', sourceFilePath);
+    console.log('target path >>>>', targetFilePath);
+    return response;
+  };
+  const copyFiles = async (sourceFilePath: string, targetDirectoryPath: string): Promise<IFileSystemDACResponse> => {
+    const response = await fileSystemDAC.copyFile(sourceFilePath, targetDirectoryPath);
+    console.log('source path >>>>', sourceFilePath);
+    console.log('target path >>>>', targetDirectoryPath);
+    return response;
+  };
+
   const value = {
     createFile1,
     uploadFileData,
@@ -291,6 +323,8 @@ export function FileManagerProvider({ children }: Props) {
     updateFile,
     getDirectoryIndex,
     shareDirectory,
+    cutFiles,
+    copyFiles
   };
   return (
     <FileManagerContext.Provider value={value}>

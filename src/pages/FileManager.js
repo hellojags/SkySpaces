@@ -1,7 +1,7 @@
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 // material
@@ -26,12 +26,15 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
+import { useAction } from '../contexts'
 //
 import USERLIST from '../_mocks_/user';
 // Sky Browser
 import { SkyBrowser } from '../components/skybrowser/SkyBrowser';
 import { MySky } from "../components/mysky/MySky";
-import {useSkynet} from "../contexts/skynet"
+import { useSkynet } from "../contexts/skynet"
+import ActionHeader from '../components/ActionHeader';
+import InfoDrawer from '../components/InfoDrawer';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -75,13 +78,29 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function FileManager() {
+  const [openDrawer, setOpenDrawer] = React.useState(false);
+  const [actionToPerform, setActionToPerform] = React.useState();
+  const { selectedFiles } = useAction();
+  const handleCallbackFromAction = (childDataForDrawer) => {
+    if (typeof childDataForDrawer === 'boolean') {
+      setOpenDrawer(childDataForDrawer);
+      //console.log(openDrawer);
+    } else {
+      setActionToPerform(childDataForDrawer);
+      //console.log(actionToPerform);
+    }
+  }
+  const onClose = () => {
+    setOpenDrawer(false);
+    // console.log(openDrawer);
+  }
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const {loggedIn} = useSkynet();
+  const { loggedIn } = useSkynet();
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -136,11 +155,13 @@ export default function FileManager() {
   const isUserNotFound = filteredUsers.length === 0;
 
   return (
-    <Page title="FilesManager | Minimal-UI" >
-      <Container>
-        <MySky></MySky>
-        <Card>
-          {loggedIn ? <SkyBrowser /> : "loading..." }
+    <Page title="SkySpaces" >
+      <ActionHeader parentCallBack={handleCallbackFromAction} />
+      <Container sx={{ position: 'relative' }}>
+        {openDrawer && <InfoDrawer open={openDrawer} onClose={onClose} selectedFiles={selectedFiles} />}
+        {/* <MySky></MySky> */}
+        <Card sx={{ mt: 2 }}>
+          {loggedIn ? <SkyBrowser action={actionToPerform} /> : <Stack>loading...</Stack>}
         </Card>
       </Container>
     </Page>

@@ -1,10 +1,7 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { Icon } from '@iconify/react';
-import eyeFill from '@iconify/icons-eva/eye-fill';
-import eyeOffFill from '@iconify/icons-eva/eye-off-fill';
 // material
 import {
   Link,
@@ -13,13 +10,34 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  FormControlLabel
+  FormControlLabel,
+  Grid,
+  Typography
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { createTheme, styled, useTheme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
+import { useSkynet } from "../../../contexts";
 
 // ----------------------------------------------------------------------
 
+const useStyles = makeStyles((theme) => ({
+  login: {
+    border: '1px solid #ccc',
+    padding: '70px',
+    boxShadow: '0px 0px 23px 1px rgba(0,0,0,0.75)',
+    ['@media (min-width: 660px)']: {
+      border: '1px solid #ccc',
+      padding: '110px',
+      boxShadow: '0px 0px 23px 1px rgba(0,0,0,0.75)'
+    }
+  }
+}));
+
 export default function LoginForm() {
+  const { login, logout, loggedIn, userID } = useSkynet();
+  const theme = useTheme();
+  const classes = useStyles();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,6 +46,16 @@ export default function LoginForm() {
     password: Yup.string().required('Password is required')
   });
 
+  const loginHandler = async () => {
+    await login();
+    console.log(userID, loggedIn);
+  }
+
+  useEffect(() => {
+    if (loggedIn && userID !== undefined && userID !== null) {
+      navigate('/home/filemanager', { replace: true });
+    }
+  }, [loggedIn]);
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -36,7 +64,7 @@ export default function LoginForm() {
     },
     validationSchema: LoginSchema,
     onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+      navigate('/home/', { replace: true });
     }
   });
 
@@ -47,60 +75,23 @@ export default function LoginForm() {
   };
 
   return (
-    <FormikProvider value={formik}>
-      <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          <TextField
-            fullWidth
-            autoComplete="username"
-            type="email"
-            label="Email address"
-            {...getFieldProps('email')}
-            error={Boolean(touched.email && errors.email)}
-            helperText={touched.email && errors.email}
-          />
-
-          <TextField
-            fullWidth
-            autoComplete="current-password"
-            type={showPassword ? 'text' : 'password'}
-            label="Password"
-            {...getFieldProps('password')}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleShowPassword} edge="end">
-                    <Icon icon={showPassword ? eyeFill : eyeOffFill} />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-            error={Boolean(touched.password && errors.password)}
-            helperText={touched.password && errors.password}
-          />
-        </Stack>
-
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-          <FormControlLabel
-            control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
-            label="Remember me"
-          />
-
-          <Link component={RouterLink} variant="subtitle2" to="#">
-            Forgot password?
-          </Link>
-        </Stack>
-
+    <Stack>
+      <Grid className={classes.login}>
+        <Typography variant="h3" gutterBottom component="div">
+          Own Your Space
+        </Typography>
         <LoadingButton
           fullWidth
           size="large"
-          type="submit"
+          type="button"
           variant="contained"
           loading={isSubmitting}
+          onClick={loginHandler}
         >
-          Login
+          Login Using MySky
         </LoadingButton>
-      </Form>
-    </FormikProvider>
+      </Grid>
+    </Stack>
   );
+
 }

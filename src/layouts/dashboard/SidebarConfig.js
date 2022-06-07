@@ -1,11 +1,9 @@
 import { Icon } from '@iconify/react';
-import pieChart2Fill from '@iconify/icons-eva/pie-chart-2-fill';
-import peopleFill from '@iconify/icons-eva/people-fill';
-import shoppingBagFill from '@iconify/icons-eva/shopping-bag-fill';
-import fileTextFill from '@iconify/icons-eva/file-text-fill';
-import lockFill from '@iconify/icons-eva/lock-fill';
-import personAddFill from '@iconify/icons-eva/person-add-fill';
-import alertTriangleFill from '@iconify/icons-eva/alert-triangle-fill';
+import imageOutline from '@iconify/icons-eva/image-outline';
+import peopleOutline from '@iconify/icons-eva/people-outline';
+import folderOutline from '@iconify/icons-eva/folder-outline';
+import trash2Outline from '@iconify/icons-eva/trash-2-outline';
+import historyOutline from '@iconify/icons-ant-design/history-outline';
 
 // ----------------------------------------------------------------------
 
@@ -13,44 +11,29 @@ const getIcon = (name) => <Icon icon={name} width={22} height={22} />;
 
 const sidebarConfig = [
   {
-    title: 'dashboard',
-    path: '/dashboard/FilesManager',
-    icon: getIcon(pieChart2Fill)
+    title: 'My Files',
+    path: '/home/filemanager', 
+    icon: getIcon(folderOutline)
   },
   {
-    title: 'user',
-    path: '/dashboard/user',
-    icon: getIcon(peopleFill)
+    title: 'Recent',
+    path: '/home/user',
+    icon: getIcon(historyOutline)
   },
   {
-    title: 'FilesManager',
-    path: '/dashboard/FilesManager',
-    icon: getIcon(peopleFill)
+    title: 'Photos',
+    path: '/home/photos',
+    icon: getIcon(imageOutline)
   },
   {
-    title: 'product',
-    path: '/dashboard/products',
-    icon: getIcon(shoppingBagFill)
+    title: 'Shared',
+    path: '/home/products',
+    icon: getIcon(peopleOutline)
   },
   {
-    title: 'blog',
-    path: '/dashboard/blog',
-    icon: getIcon(fileTextFill)
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: getIcon(lockFill)
-  },
-  {
-    title: 'register',
-    path: '/register',
-    icon: getIcon(personAddFill)
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: getIcon(alertTriangleFill)
+    title: 'Recycle bin',
+    path: '/home/blog',
+    icon: getIcon(trash2Outline)
   }
 ];
 

@@ -23,7 +23,7 @@ import {
   setChonkyDefaults,
   defineFileAction,
   ChonkyIconName,
-} from "chonky";
+} from "@skynethubio/web3-file-explorer";
 import { useFileManager } from "../../contexts";
 
 // Custom File Action

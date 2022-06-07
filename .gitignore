@@ -1,3 +1,5 @@
+build
+yarn.lock
 # Logs
 logs
 *.log

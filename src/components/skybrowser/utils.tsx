@@ -1,13 +1,14 @@
 import { createHash } from "crypto";
 
-import { ChonkyIconName } from "chonky";
-export const convert2ChonkyFileData = (upload, isDirectory): any => {
+import { ChonkyIconName } from "@skynethubio/web3-file-explorer";
+export const convert2ChonkyFileData = (upload, isDirectory, folderName): any => {
   console.log(`convert2ChonkyFileData: upload : ${JSON.stringify(upload)}`);
   let chonkyCustomFileData = null;
   if (isDirectory) {
     chonkyCustomFileData = {
       id: upload?.fileData?.hash, // (Required) String that uniquely identifies the file
-      name: upload.absoluteFolderPath.split("/")[upload.absoluteFolderPath.split("/").length-2], // (Required) Full name, e.g. `MyImage.jpg`
+      // name: upload.absoluteFolderPath.split("/")[upload.absoluteFolderPath.split("/").length-2], // (Required) Full name, e.g. `MyImage.jpg`
+      name: folderName, // (Required) Full name, e.g. `MyImage.jpg`
       ext: "", // File extension, e.g. `.jpg`
       isDir: isDirectory, // Is a directory, default: false
       isHidden: false, // Is a hidden file, default: false

@@ -15,6 +15,7 @@ import MuiAlert from "@mui/material/Alert";
 import { SkynetClient, parseSkylink } from "skynet-js";
 import SkynetUploadStatus from "./SkynetUploadStatus";
 import imageCompression from "browser-image-compression";
+import apiConstant from '../../constants/apiConstant';
 //import "./upload.css";
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -79,9 +80,13 @@ const SkynetUpload = React.forwardRef((props: any, ref) => {
   const [uploadErr, setUploadErr] = useState(false);
   const [isDir, setIsDir] = useState(false);
   //const apiUrl = props.portal != null ? props.portal : "https://skynetpro.net";
+  
   const gridRef = useRef();
-  const apiUrl = props.portal != null ? props.portal : "https://siasky.net";
-  const client = new SkynetClient(apiUrl);
+ /*  const apiUrl = props.portal != null ? props.portal : "https://siasky.net";
+  const apiUrl = props.portal != null ? props.portal : "https://fileportal.org "; */
+  const apiUrl = props.portal != null ? props.portal : apiConstant.apiUrl;
+  const SKYNET_JWT = apiConstant.SKYNET_JWT;
+  const client = new SkynetClient(apiUrl, {customCookie: SKYNET_JWT});
 
   useEffect(() => {
     handleDrop(props.droppedFiles);

@@ -1,5 +1,5 @@
-import Button from '@material-ui/core/Button';
-import { ChonkyActions, ChonkyFileActionData } from 'chonky';
+import {Button} from '@mui/material';
+import { ChonkyActions, ChonkyFileActionData } from '@skynethubio/web3-file-explorer';
 import Noty from 'noty';
 import 'noty/lib/noty.css';
 import 'noty/lib/themes/relax.css';
@@ -15,14 +15,14 @@ ignoredActions.add(ChonkyActions.EndDragNDrop.id);
 ignoredActions.add(ChonkyActions.ChangeSelection.id);
 
 export const showActionNotification = (data: ChonkyFileActionData) => {
-    if (ignoredActions.has(data.action.id)) return;
+    if (ignoredActions.has(data?.action.id)) return;
 
     const textParts: string[] = [];
     textParts.push(
-        `<div class="noty-action">Action: <code>${data.action.id}</code></div>`
+        `<div class="noty-action">Action: <code>${data?.action.id}</code></div>`
     );
 
-    if (data.id === ChonkyActions.OpenFiles.id) {
+    if (data?.id === ChonkyActions.OpenFiles.id) {
         const fileNames = data.payload.files.map((f) => `<code>${f.name}</code>`);
         if (fileNames.length === 1) {
             textParts.push('You opened a single file:');
@@ -32,7 +32,7 @@ export const showActionNotification = (data: ChonkyFileActionData) => {
         textParts.push(...fileNames);
     }
 
-    if (data.id === ChonkyActions.MoveFiles.id) {
+    if (data?.id === ChonkyActions.MoveFiles.id) {
         const fileCount = data.payload.files.length;
         const countString = `${fileCount} file${fileCount !== 1 ? 's' : ''}`;
         const source = `<code>${data.payload.source?.name ?? '~'}</code>`;
@@ -40,7 +40,7 @@ export const showActionNotification = (data: ChonkyFileActionData) => {
         textParts.push(`You moved ${countString} from ${source} to ${destination}.`);
     }
 
-    if (data.id === ChonkyActions.DeleteFiles.id) {
+    if (data?.id === ChonkyActions.DeleteFiles.id) {
         const fileCount = data.state.selectedFilesForAction.length;
         const countString = `${fileCount} file${fileCount !== 1 ? 's' : ''}`;
         textParts.push(`You deleted ${countString} files.`);

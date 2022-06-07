@@ -3,15 +3,17 @@ import { useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
+import { Box, Link, Button, Drawer, Typography, Avatar, Stack, LinearProgress } from '@mui/material';
 // components
 import Logo from '../../components/Logo';
 import Scrollbar from '../../components/Scrollbar';
 import NavSection from '../../components/NavSection';
 import { MHidden } from '../../components/@material-extend';
 //
+import { Icon } from '@iconify/react';
 import sidebarConfig from './SidebarConfig';
 import account from '../../_mocks_/account';
+import { getUserPlanDetails, getUserStatsDetails } from '../../api/plan-api';
 
 import { useSkynetManager } from '../../contexts';
 // ----------------------------------------------------------------------
@@ -28,7 +30,7 @@ const RootStyle = styled('div')(({ theme }) => ({
 const AccountStyle = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(2, 2.5),
+  padding: theme.spacing(1.2, 2.5),
   borderRadius: theme.shape.borderRadiusSm,
   backgroundColor: theme.palette.grey[200]
 }));
@@ -42,13 +44,25 @@ DashboardSidebar.propTypes = {
 
 export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
   const { pathname } = useLocation();
-  const {uploads} = useSkynetManager();
+  const { uploads } = useSkynetManager();
   useEffect(() => {
     if (isOpenSidebar) {
       onCloseSidebar();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  useEffect(() => {
+    getUserPlanDetails().then(res => {
+      console.log(res);
+      return res;
+    }).catch((error) => {
+        alert(error);
+        return error;
+      });
+
+    getUserStatsDetails();
+  }, [])
 
   const renderContent = (
     <Scrollbar
@@ -57,13 +71,13 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
         '& .simplebar-content': { height: '100%', display: 'flex', flexDirection: 'column' }
       }}
     >
-      <Box sx={{ px: 2.5, py: 3 }}>
+      <Box sx={{ px: 2.5, pt: 1 }}>
         <Box component={RouterLink} to="/" sx={{ display: 'inline-flex' }}>
           <Logo />
         </Box>
       </Box>
 
-      <Box sx={{ mb: 5, mx: 2.5 }}>
+      {/* <Box sx={{ mb: 2.5, mx: 2.5 }}>
         <Link underline="none" component={RouterLink} to="#">
           <AccountStyle>
             <Avatar src={account.photoURL} alt="photoURL" />
@@ -77,11 +91,11 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             </Box>
           </AccountStyle>
         </Link>
-      </Box>
+      </Box> */}
 
       <NavSection navConfig={sidebarConfig} />
 
-      <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
+      <Box sx={{ px: 0, pb: 3, mt: 10 }}>
         <Stack
           alignItems="center"
           spacing={3}
@@ -98,27 +112,23 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             src="/static/illustrations/illustration_avatar.png"
             sx={{ width: 100, position: 'absolute', top: -50 }}
           /> */}
-
-          <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            In-Progress Counts
+          <Box>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Get 100GB of storage free for all your files and photos.
             </Typography>
-
-            <Typography paddingTop={2} gutterBottom variant="h6">
-             Uploads: {uploads?.length}
+            <Typography variant="body2" sx={{ color: 'text.secondary' }} gutterBottom paddingBottom={2}>
+              <a href="#">Learn more about storage plans.</a>
             </Typography>
-            
+            <Button fullWidth variant="outlined" startIcon={<Icon icon="cil:diamond" />}>
+              Buy Storage
+            </Button>
           </Box>
-
-          <Button
-            fullWidth
-            href="https://material-ui.com/store/items/minimal-dashboard/"
-            target="_blank"
-            variant="contained"
-            color="error"
-          >
-           Cancel Uploads
-          </Button>
+          <Box>
+            <LinearProgress variant="determinate" value={10} />
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              10Gb of 100Gb used
+            </Typography>
+          </Box>
         </Stack>
       </Box>
     </Scrollbar>

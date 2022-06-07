@@ -6,21 +6,25 @@ import GlobalStyles from './theme/globalStyles';
 // components
 import ScrollToTop from './components/ScrollToTop';
 import { BaseOptionChartStyle } from './components/charts/BaseOptionChart';
-import { SkynetProvider, FileManagerProvider, SkynetManagerProvider } from './contexts';
+import { SkynetProvider, FileManagerProvider, SkynetManagerProvider, UserProfileProvider, ActionProvider } from './contexts';
 // ----------------------------------------------------------------------
 
 export default function App() {
   return (
     <ThemeConfig>
-      <SkynetProvider>
-        <SkynetManagerProvider>
-          <FileManagerProvider>
-            <GlobalStyles />
-            <BaseOptionChartStyle />
-            <Router />
-          </FileManagerProvider>
-        </SkynetManagerProvider>
-      </SkynetProvider>
+      <ActionProvider>
+        <SkynetProvider>
+          <UserProfileProvider>
+            <SkynetManagerProvider>
+              <FileManagerProvider>
+                <GlobalStyles />
+                <BaseOptionChartStyle />
+                <Router />
+              </FileManagerProvider>
+            </SkynetManagerProvider>
+          </UserProfileProvider>
+        </SkynetProvider>
+      </ActionProvider>
     </ThemeConfig>
   );
 }
