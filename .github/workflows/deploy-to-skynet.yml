@@ -14,9 +14,6 @@ jobs:
         with:
           node-version: 14.x
       - run: npm install --force
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
       - run: npm run-script build
       - name: "Deploy to Skynet"
         uses: SkynetLabs/deploy-to-skynet-action@v2.2.0
