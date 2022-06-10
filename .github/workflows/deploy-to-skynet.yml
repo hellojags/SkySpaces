@@ -17,6 +17,8 @@ jobs:
         env:
           PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
       - run: npm run-script build
+        env:
+          PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
       - name: "Deploy to Skynet"
         uses: SkynetLabs/deploy-to-skynet-action@v2.2.0
         with:
