@@ -15,7 +15,7 @@ const portal = apiConstant.apiUrl;
 const SKYNET_JWT = apiConstant.SKYNET_JWT;
 const client = new SkynetClient(portal, { customCookie: SKYNET_JWT });
 const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
-const dataDomain = hostname === 'localhost' ? 'localhost' : 'skyspaces.hns'
+const dataDomain = hostname === 'localhost' ? 'localhost' : 'skyspace-beta.hns'
 
 type State = {
   mySky: MySky;

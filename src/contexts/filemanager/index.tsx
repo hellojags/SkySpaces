@@ -5,6 +5,9 @@ import { IFileSystemDACResponse } from "fs-dac-library/dist/cjs/types";
 import { useSkynet } from "../skynet";
 import { path } from "path-browserify";
 import { FileWithPath } from "react-dropzone";
+// SkyFS Paths
+// skyfs://local/fs-dac.hns/localhost
+
 type State = {
   createFile1: (
     directoryPath: string,
