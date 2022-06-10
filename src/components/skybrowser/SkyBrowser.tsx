@@ -88,7 +88,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const inputFilesRef: any = useRef(); // Reference to Input type File Picker
   const fileBrowserRef = React.useRef<FileBrowserHandle>(null); // Reference to Chonky Browser component
   const folderNameRef: any = React.useRef(); // Reference to Chonky Browser component
-  const [folderPath, setFolderPath] = useState("/localhost/");
+  const [folderPath, setFolderPath] = useState("/");
   const [newFolderName, setNewFolderName] = useState('');
   const { actionsMsg, setActionMsg, setCurrentFolderPath, setSelectedFile } = useAction();
   const [open, setOpen] = useState(false);
@@ -160,7 +160,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const folderChain = useFolderChain(fileMap, currentFolderId);
 
   const initializeCustomFileMap = async () => {
-    let directoryIndexSkyFS = await getDirectoryIndex("/localhost/");
+    let directoryIndexSkyFS = await getDirectoryIndex("/");
     console.log(
       "# directoryIndexSkyFS =" + JSON.stringify(directoryIndexSkyFS)
     );
@@ -169,7 +169,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       isEmpty(directoryIndexSkyFS.directories) &&
       isEmpty(directoryIndexSkyFS.files)
     ) {
-      const response = await createDirectory("/localhost/", "home");
+      const response = await createDirectory("/", "home");
       directoryIndexSkyFS.directories = {
         home: {
           name: "home",

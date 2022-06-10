@@ -48,7 +48,7 @@ export function ActionHeader(props) {
     const [showInfoButton, setShowInfoButton] = React.useState(false);
     const [selectedChip, setSelectedChip] = React.useState(0);
     const [totalFiles, setTotalFiles] = React.useState(0);
-    const [sourcePath, setSourcePath] = React.useState('/localhost');
+    const [sourcePath, setSourcePath] = React.useState('/');
     const [targetPath, setTargetPath] = React.useState('');
     const [localAction, setLocalAction] = React.useState('');
     const [chipData, setChipData] = React.useState([

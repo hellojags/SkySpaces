@@ -3,7 +3,7 @@
     "fileMap": {
         "qwerty123456": {
             "id": "qwerty123456",
-            "name": "localhost",
+            "name": "/",
             "isDir": true,
             "childrenIds": [],
             "childrenCount": 0

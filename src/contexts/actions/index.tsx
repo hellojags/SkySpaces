@@ -29,7 +29,7 @@ import React, {
   
   export function ActionProvider({ children }: Props) {
     const [actionsMsg, setActionsMsg] = useState('');
-    const [folderPath, setFolderPath] = useState('/localhost/');
+    const [folderPath, setFolderPath] = useState('/');
     const [selectedFiles, setSelectedFiles] = useState([]);
     //const fileSystemDAC = new FileSystemDAC() as any;
     // On initial run, start initialization of MySky
