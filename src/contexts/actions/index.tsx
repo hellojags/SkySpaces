@@ -15,6 +15,7 @@ import React, {
     folderPath: string;
     setCurrentFolderPath: (folderPath)=> void;
     setSelectedFile: (file) => void;
+    selectedFiles: any[];
   };
   
   //Create Skynet Context
@@ -38,18 +39,18 @@ import React, {
     // eslint-disable-next-line
     const setActionMsg = (msg) => {
       setActionsMsg(msg);
-      console.log(actionsMsg);
+      console.log(actionsMsg, 'action msg in action provider');
     };
     const setCurrentFolderPath = (path) => {
       setFolderPath(path);
-      console.log(folderPath);
+      console.log(folderPath, 'folder path in action provider');
     };
 
     const setSelectedFile = (file) => {
       let files = [];
       files.push(file);
       setSelectedFiles([...file]);
-      console.log(selectedFiles);
+      console.log(selectedFiles, 'selected files in action provider');
     }
     // eslint-disable-next-line
     const value = {

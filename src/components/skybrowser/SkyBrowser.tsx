@@ -90,9 +90,10 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const folderNameRef: any = React.useRef(); // Reference to Chonky Browser component
   const [folderPath, setFolderPath] = useState("/");
   const [newFolderName, setNewFolderName] = useState('');
-  const { actionsMsg, setActionMsg, setCurrentFolderPath, setSelectedFile } = useAction();
+  const { actionsMsg, setActionMsg, setCurrentFolderPath, setSelectedFile, selectedFiles } = useAction();
   const [open, setOpen] = useState(false);
   const [createdFolders, setCreatedFolders] = useState([]);
+  const [filesSelected, setFilesSelected] = useState([]);
 
   const {
     mode,
@@ -145,7 +146,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   //   if (mode === "file") inputElement.removeAttribute("webkitdirectory");
   // }, [inputElement, mode]);
 
-  const { getDirectoryIndex, createDirectory, downloadFileData, cutFiles } = useFileManager();
+  const { getDirectoryIndex, createDirectory, downloadFileData, rename } = useFileManager();
   const {
     fileMap,
     currentFolderId,
@@ -375,6 +376,9 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
       (data: any) => {
         if (data?.id === 'change_selection') {
           setSelectedFile(data.state.selectedFilesForAction);
+          if(data.state.selectedFilesForAction.length > 0){
+            setFilesSelected(data.state.selectedFilesForAction);
+          }
         }
         if (data?.id === ChonkyActions.OpenFiles.id) {
           const { targetFile, files } = data.payload;
@@ -458,57 +462,74 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     let directoryIndexSkyFS;
     let chonkyCustomFileMap;
     directoryIndexSkyFS = await getDirectoryIndex(folderPath);
-    if (
-      isEmpty(directoryIndexSkyFS.directories) &&
-      isEmpty(directoryIndexSkyFS.files)
-    ) {
-      const response = await createDirectory(folderPath, newFolderName);
-      directoryIndexSkyFS.directories = {
-        home: {
-          name: newFolderName,
-          created: Math.floor(Date.now() / 1000),
-          id: createHash("sha256").update(folderPath + '/' + newFolderName).digest("hex"),
-          //id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 35)
-        },
-      };
-      const chonkyCustomFileMap =
-        convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS); // Conver directoryIndexSkyFS data to Chonky Browser format
-      console.log(
-        "# chonkyCustomFileMap =" + JSON.stringify(chonkyCustomFileMap)
-      );
-      if (chonkyCustomFileMap?.length > 0) {
-        fileBrowserRef.current.requestFileAction(
-          ChonkyActions.CreateFolder,
-          chonkyCustomFileMap
-        );
-      }
-    } else {
-      const response = await createDirectory(folderPath, newFolderName);
+    if (actionsMsg === 'Rename') {
       chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
-      console.log(chonkyCustomFileMap);
-      if (chonkyCustomFileMap?.length > 0 && response) {
-        fileBrowserRef.current.requestFileAction(
-          ChonkyActions.CreateFolder,
-          chonkyCustomFileMap
+      renameFileNme(chonkyCustomFileMap);
+    }
+    if (actionsMsg === 'Create Folder') {
+      if (
+        isEmpty(directoryIndexSkyFS.directories) &&
+        isEmpty(directoryIndexSkyFS.files)
+      ) {
+        const response = await createDirectory(folderPath, newFolderName);
+        directoryIndexSkyFS.directories = {
+          home: {
+            name: newFolderName,
+            created: Math.floor(Date.now() / 1000),
+            id: createHash("sha256").update(folderPath + '/' + newFolderName).digest("hex"),
+            //id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 35)
+          },
+        };
+        const chonkyCustomFileMap =
+          convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS); // Conver directoryIndexSkyFS data to Chonky Browser format
+        console.log(
+          "# chonkyCustomFileMap =" + JSON.stringify(chonkyCustomFileMap)
         );
+        if (chonkyCustomFileMap?.length > 0) {
+          fileBrowserRef.current.requestFileAction(
+            ChonkyActions.CreateFolder,
+            chonkyCustomFileMap
+          );
+          setActionMsg('');
+        }
+      } else {
+        const response = await createDirectory(folderPath, newFolderName);
+        chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
+        console.log(chonkyCustomFileMap);
+        if (chonkyCustomFileMap?.length > 0 && response) {
+          fileBrowserRef.current.requestFileAction(
+            ChonkyActions.CreateFolder,
+            chonkyCustomFileMap
+          );
+          setActionMsg('');
+        }
       }
     }
-
   }, [newFolderName])
 
+  const renameFileNme = useCallback(async (chonkyCustomFileMap) => {
+    let res = await rename(folderPath + '/' + filesSelected[0].name, newFolderName);
+    if (res.success) {
+      handleFileAction(uploadFiles(chonkyCustomFileMap));
+      console.log("### Files Renamed Successfully ####");
+      setActionMsg('');
+    }
+  }, [newFolderName]);
+
   useEffect(() => {
-    if (newFolderName !== '') {
+    if (newFolderName !== '' ) {
       createFolderData();
     }
-  }, [newFolderName, createFolderData])
+
+  }, [newFolderName, createFolderData, renameFileNme])
 
   const clearActionMsg = useCallback(() => {
     setActionMsg('');
   }, [])
 
   useEffect(() => {
-      handleCallbackFromAction(actionsMsg);
-      clearActionMsg();
+    handleCallbackFromAction(actionsMsg);
+    //clearActionMsg();
   }, [actionsMsg, clearActionMsg]);
 
   const handleCallbackFromAction = (msgFromChild) => {
@@ -528,6 +549,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
         inputFilesRef.current.removeAttribute("directory");
       }
       inputFilesRef.current.click();
+      setActionMsg('');
     }
     (async () => {
       let zip = new JSZip();
@@ -550,6 +572,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
           const selectedFile = directoryIndexSkyFS.files[selectedFiles[0].name];
           const resp = await downloadFileData(selectedFile, selectedFile.mimeType, selectedFile.name);
           await save(resp, selectedFile.name);
+          setActionMsg('');
         } else {
           selectedFiles.forEach(async (file, i) => {
             const selectedFile = directoryIndexSkyFS.files[file.name];
@@ -562,10 +585,17 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
               });
             }
           });
+          setActionMsg('');
         }
       }
       if (msgFromChild === 'File Moved Successfully' || msgFromChild === 'File Copied Successfully') {
         handleFileAction(uploadFiles(chonkyCustomFileMap));
+        console.log("### Files Moved Successfully ####");
+        setActionMsg('');
+      }
+      if (msgFromChild === 'Rename') {
+        setNewFolderName('');
+        setOpen(true);
       }
     })();
   }
@@ -573,6 +603,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setNewFolderName('');
+    setActionMsg('');
     setOpen(false);
   };
 
@@ -652,14 +683,16 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
           noValidate
           autoComplete="off"
         >
-          <CardHeader title="" />
+          {actionsMsg === 'Create Folder' && <CardHeader title="Create New Folder" />}
+          {actionsMsg === 'Rename' && <CardHeader title={`Rename file: ${filesSelected[0].name}`} />}
           <Card>
             <CardContent>
               {/* <Typography>
                 Please enter the folder name.
               </Typography> */}
               <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                <InputLabel htmlFor="folder-name-input">Enter Folder Name</InputLabel>
+                {actionsMsg === 'Create Folder' && <InputLabel htmlFor="folder-name-input">Enter Folder Name</InputLabel>}
+                {actionsMsg === 'Rename' && <InputLabel htmlFor="folder-name-input">Enter File Name (with extension)</InputLabel>}
                 <Input
                   id="folder-name-input"
                   type="text"

@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from "react";
-import { IconButton, ListItem, Grid, Chip, Paper, Toolbar, Button } from "@mui/material";
+import { IconButton, ListItem, Grid, Chip, Paper, Toolbar, Button, Typography } from "@mui/material";
 import { Icon } from '@iconify/react';
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
@@ -61,6 +61,11 @@ export function ActionHeader(props) {
     const actionHandler = (action) => {
         //props.parentCallBack(action);
         if (action === 'Cut' || action === 'Copy') {
+            if (selectedFiles.length > 0) {
+                if (!selectedFiles[0].isDir) {
+                    setFilesSelected(selectedFiles);
+                }
+            }
             setLocalAction(action);
         } else {
             setActionMsg(action);
@@ -98,6 +103,9 @@ export function ActionHeader(props) {
                     console.log(res, 'cut file res');
                     if (res.success) {
                         setActionMsg('File Moved Successfully');
+                        setFilesSelected([]);
+                        setActionMsg('');
+                        setLocalAction('');
                     }
                 })();
             });
@@ -109,6 +117,9 @@ export function ActionHeader(props) {
                     console.log(res, 'copy file res');
                     if (res.success) {
                         setActionMsg('File Copied Successfully');
+                        setFilesSelected([]);
+                        setActionMsg('');
+                        setLocalAction('');
                     }
                 })();
             });
@@ -116,7 +127,18 @@ export function ActionHeader(props) {
     }
 
     React.useEffect(() => {
-        if (selectedFiles.length > 0) {
+        setInMyFiles(true);
+        setSelected(false);
+        setActionMsg('');
+        if (sourcePath !== folderPath) {
+            setActionMsg('');
+        } else {
+            setActionMsg(prevState => prevState);
+        }
+    }, [folderPath]);
+
+    React.useEffect(() => {
+        /* if (selectedFiles.length > 0) {
             if (!selectedFiles[0].isDir) {
                 setFilesSelected(selectedFiles);
             }
@@ -129,90 +151,111 @@ export function ActionHeader(props) {
                 setFilesSelected([]);
                 setLocalAction('');
             }
-        }
-        if (selectedFiles.length === 1 && !selectedFiles[0].isDir) {
-            setShowInfoButton(true);
-        } else {
-            setShowInfoButton(false);
-            props.parentCallBack(false);
-        }
-        const showInfo = (selectedFiles.length === 1 && !selectedFiles[0].isDir) ? true : false;
-        setShowInfoButton(showInfo);
+        } */
         if (selectedFiles.length > 0) {
             setTotalFiles(selectedFiles.length);
             setInMyFiles(false);
             setSelected(true);
+            if (selectedFiles.length === 1 && !selectedFiles[0].isDir) {
+                setShowInfoButton(true);
+            } else {
+                setShowInfoButton(false);
+                props.parentCallBack(false);
+            }
         } else {
             setInMyFiles(true);
             setSelected(false);
         }
-        if (sourcePath !== folderPath) {
-            setActionMsg('');
-        } else {
-            setActionMsg(prevState => prevState);
-        }
-    }, [selectedFiles, folderPath])
+    }, [selectedFiles])
     return (
-        <Toolbar className={classes.toolbarCss} disableGutters={true} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-            {inMyFiles &&
-                <Grid className={classes.leftGrid}>
-                    <Button onClick={() => actionHandler('Create Folder')}><Icon icon="ic:outline-add" /> New Folder</Button>
-                    <MenuButton parentCallBack={actionHandler} buttonName="Upload" items={['Files', 'Folder', 'Web App']} />
-                </Grid>}
-            {selected &&
-                <Grid>
-                    {actionsMsg !== 'Cut' && <Button onClick={() => actionHandler('Cut')} startIcon={<Icon icon="fluent:screen-cut-20-filled" />}>Cut</Button>}
-                    {actionsMsg !== 'Copy' && <Button onClick={() => actionHandler('Copy')} startIcon={<Icon icon="cil:copy" />}>Copy</Button>}
-                    <Button onClick={() => actionHandler('Share')} startIcon={<Icon icon="fa6-regular:share-from-square" />}>Share</Button>
-                    <Button onClick={() => actionHandler('Download')} startIcon={<Icon icon="clarity:download-line" />}>Download</Button>
-                    <Button onClick={() => actionHandler('Delete')} startIcon={<Icon icon="bi:trash" />}>Delete</Button>
-                    <Button onClick={() => actionHandler('Rename')} startIcon={<Icon icon="bx:rename" />}>Rename</Button>
-                    {/* <Button startIcon={<Icon icon="cil:library" />}>Create album from folder</Button> */}
-                    <Button startIcon={<Icon icon="icomoon-free:embed2" />}>Embed</Button>
-                    <Button onClick={() => actionHandler('Version History')} startIcon={<Icon icon="ant-design:history-outlined" />}>Version History</Button>
-                </Grid>
-            }
-            {inPhotos &&
-                <Paper
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        flexWrap: 'wrap',
-                        listStyle: 'none',
-                        p: 0.5,
-                        m: 0,
-                    }}
-                    component="ul"
-                >
-                    {chipData.map((data) => {
-                        return (
-                            <ListItem key={data.key} className={classes.chip} onClick={() => handleClick(data.key)}>
-                                <Chip
-                                    label={data.label}
-                                    variant={data.key === selectedChip ? "" : 'outlined'}
-                                />
-                            </ListItem>
-                        );
-                    })}
-                </Paper>}
-            {(inMyFiles || selected) &&
-                <Grid className={classes.rightGrid}>
-                    {!selected &&
-                        <MenuButton buttonName="Sort" items={['Name', 'Modified', 'File Size']} order={['Ascending', 'Descending']} />
-                    }
-                    {selected &&
-                        <Button startIcon={<Icon icon="iconoir:cancel" />}>{totalFiles} selected</Button>
-                    }
-                    <MenuButton buttonName="List" items={['List', 'Tiles']} />
-                    {((localAction === 'Cut' || localAction === 'Copy') && filesSelected.length > 0) &&
+        <React.Fragment>
+            <Toolbar className={classes.toolbarCss} disableGutters={true} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                {(inMyFiles || selected) &&
+                    <Grid>
+                        {((localAction === 'Cut' || localAction === 'Copy') && filesSelected.length > 0) &&
+                            <Button onClick={() => setTarget()} startIcon={<Icon icon="clarity:paste-solid" />}>Paste</Button>
+                        }
+                    </Grid>
+                }
+                {inMyFiles &&
+                    <Grid className={classes.leftGrid}>
+                        <Button onClick={() => actionHandler('Create Folder')}><Icon icon="ic:outline-add" /> New Folder</Button>
+                        <MenuButton parentCallBack={actionHandler} buttonName="Upload" items={['Files', 'Folder', 'Web App']} />
+                    </Grid>}
+                {selected &&
+                    <Grid>
+                        {actionsMsg !== 'Cut' && <Button onClick={() => actionHandler('Cut')} startIcon={<Icon icon="fluent:screen-cut-20-filled" />}>Cut</Button>}
+                        {actionsMsg !== 'Copy' && <Button onClick={() => actionHandler('Copy')} startIcon={<Icon icon="cil:copy" />}>Copy</Button>}
+                        <Button onClick={() => actionHandler('Share')} startIcon={<Icon icon="fa6-regular:share-from-square" />}>Share</Button>
+                        <Button onClick={() => actionHandler('Download')} startIcon={<Icon icon="clarity:download-line" />}>Download</Button>
+                        <Button onClick={() => actionHandler('Delete')} startIcon={<Icon icon="bi:trash" />}>Delete</Button>
+                        {(selectedFiles.length === 1 && !selectedFiles[0].isDir) && <Button onClick={() => actionHandler('Rename')} startIcon={<Icon icon="bx:rename" />}>Rename</Button>}
+                        {/* <Button startIcon={<Icon icon="cil:library" />}>Create album from folder</Button> */}
+                        <Button startIcon={<Icon icon="icomoon-free:embed2" />}>Embed</Button>
+                        <Button onClick={() => actionHandler('Version History')} startIcon={<Icon icon="ant-design:history-outlined" />}>Version History</Button>
+                    </Grid>
+                }
+                {inPhotos &&
+                    <Paper
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexWrap: 'wrap',
+                            listStyle: 'none',
+                            p: 0.5,
+                            m: 0,
+                        }}
+                        component="ul"
+                    >
+                        {chipData.map((data) => {
+                            return (
+                                <ListItem key={data.key} className={classes.chip} onClick={() => handleClick(data.key)}>
+                                    <Chip
+                                        label={data.label}
+                                        variant={data.key === selectedChip ? "" : 'outlined'}
+                                    />
+                                </ListItem>
+                            );
+                        })}
+                    </Paper>}
+                {(inMyFiles || selected) &&
+                    <Grid className={classes.rightGrid}>
+                        {!selected &&
+                            <MenuButton buttonName="Sort" items={['Name', 'Modified', 'File Size']} order={['Ascending', 'Descending']} />
+                        }
+                        {selected &&
+                            <Button startIcon={<Icon icon="iconoir:cancel" />}>{totalFiles} selected</Button>
+                        }
+                        <MenuButton buttonName="List" items={['List', 'Tiles']} />
+                        {/* {((localAction === 'Cut' || localAction === 'Copy') && filesSelected.length > 0) &&
                         <Button onClick={() => setTarget()} startIcon={<Icon icon="clarity:paste-solid" />}>Paste</Button>
-                    }
-                    {showInfoButton && <IconButton aria-label="info" sx={{ color: '#00AB55' }} onClick={handleDrawerOpen} >
-                        <Icon icon="bytesize:info" />
-                    </IconButton>}
-                </Grid>}
-
-        </Toolbar>
+                    } */}
+                        {showInfoButton && <IconButton aria-label="info" sx={{ color: '#00AB55' }} onClick={handleDrawerOpen} >
+                            <Icon icon="bytesize:info" />
+                        </IconButton>}
+                    </Grid>}
+            </Toolbar>
+            <Toolbar sx={{ minHeight: 'auto !important', paddingTop: '10px' }}>
+                {(selected && (localAction !== 'Cut' && localAction !== 'Copy')) && <Typography>
+                    {totalFiles} selected
+                </Typography>}
+                {(!selected && (localAction !== 'Cut' && localAction !== 'Copy')) && <Typography>
+                    0 selected
+                </Typography>}
+                {(filesSelected.length === 1 && localAction === 'Cut') && <Typography>
+                    {filesSelected.length} file cut
+                </Typography>}
+                {(filesSelected.length > 1 && localAction === 'Cut') && <Typography>
+                    {filesSelected.length} files cut
+                </Typography>}
+                {(filesSelected.length === 1 && localAction === 'Copy') && <Typography>
+                    {filesSelected.length} file copied
+                </Typography>}
+                {(filesSelected.length > 1 && localAction === 'Copy') && <Typography>
+                    {filesSelected.length} files copied
+                </Typography>}
+            </Toolbar>
+        </React.Fragment>
     );
 }
 

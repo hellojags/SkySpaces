@@ -39,6 +39,7 @@ type State = {
   shareDirectory: (path: string) => Promise<string>;
   cutFiles: (sourceFilePath: string, targetFilePath: string) => Promise<IFileSystemDACResponse>;
   copyFiles: (sourceFilePath: string, targetDirectoryPath: string) => Promise<IFileSystemDACResponse>;
+  rename: (filePath: string, newName: string) => Promise<IFileSystemDACResponse>;
 };
 
 //Create Skynet Context
@@ -316,6 +317,12 @@ export function FileManagerProvider({ children }: Props) {
     console.log('target path >>>>', targetDirectoryPath);
     return response;
   };
+  const rename = async (filePath: string, newName: string): Promise<IFileSystemDACResponse> => {
+    const response = await fileSystemDAC.renameFile(filePath, newName);
+    console.log('source path >>>>', filePath);
+    console.log('target path >>>>', newName);
+    return response;
+  };
 
   const value = {
     createFile1,
@@ -327,7 +334,8 @@ export function FileManagerProvider({ children }: Props) {
     getDirectoryIndex,
     shareDirectory,
     cutFiles,
-    copyFiles
+    copyFiles,
+    rename
   };
   return (
     <FileManagerContext.Provider value={value}>
