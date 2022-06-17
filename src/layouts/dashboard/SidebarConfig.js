@@ -15,26 +15,26 @@ const sidebarConfig = [
     path: '/home/filemanager', 
     icon: getIcon(folderOutline)
   },
-  {
-    title: 'Recent',
-    path: '/home/user',
-    icon: getIcon(historyOutline)
-  },
-  {
-    title: 'Photos',
-    path: '/home/photos',
-    icon: getIcon(imageOutline)
-  },
-  {
-    title: 'Shared',
-    path: '/home/products',
-    icon: getIcon(peopleOutline)
-  },
-  {
-    title: 'Recycle bin',
-    path: '/home/blog',
-    icon: getIcon(trash2Outline)
-  }
+  // {
+  //   title: 'Recent',
+  //   path: '/home/user',
+  //   icon: getIcon(historyOutline)
+  // },
+  // {
+  //   title: 'Photos',
+  //   path: '/home/photos',
+  //   icon: getIcon(imageOutline)
+  // },
+  // {
+  //   title: 'Shared',
+  //   path: '/home/products',
+  //   icon: getIcon(peopleOutline)
+  // },
+  // {
+  //   title: 'Recycle bin',
+  //   path: '/home/blog',
+  //   icon: getIcon(trash2Outline)
+  // }
 ];
 
 export default sidebarConfig;
