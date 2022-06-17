@@ -53,7 +53,7 @@ type Props = {
 };
 
 export function FileManagerProvider({ children }: Props) {
-  const { fileSystemDAC } = useSkynet();
+  const { fileSystemDAC, dataDomain } = useSkynet();
   const [directoryIndex, setDirectoryIndex] = React.useState([]);
 
   // On initial run, start initialization of MySky
@@ -284,6 +284,7 @@ export function FileManagerProvider({ children }: Props) {
   const getDirectoryIndex = async (path: string): Promise<DirectoryIndex> => {
     console.log(`-> getDirectoryIndex : start`);
     //const path: string = "/localhost/SkynetHub";
+    path = dataDomain + path;
     console.log(`getDirectoryIndex : ${path}`);
     const rootDirectoryIndex = await fileSystemDAC.getDirectoryIndex(path);
     console.log(

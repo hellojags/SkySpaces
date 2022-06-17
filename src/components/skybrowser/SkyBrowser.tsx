@@ -428,7 +428,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
           uploadFiles(data?.payload);
           console.log("### Insite Custom Action ####");
         }
-        showActionNotification(data);
+        //showActionNotification(data);
       },
       [
         uploadFiles,

@@ -53,15 +53,15 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
   }, [pathname]);
 
   useEffect(() => {
-    getUserPlanDetails().then(res => {
-      console.log(res);
-      return res;
-    }).catch((error) => {
-        alert(error);
-        return error;
-      });
+    // getUserPlanDetails().then(res => {
+    //   console.log(res);
+    //   return res;
+    // }).catch((error) => {
+    //     alert(error);
+    //     return error;
+    //   });
 
-    getUserStatsDetails();
+    //getUserStatsDetails();
   }, [])
 
   const renderContent = (
