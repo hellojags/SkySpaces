@@ -463,8 +463,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     let chonkyCustomFileMap;
     directoryIndexSkyFS = await getDirectoryIndex(folderPath);
     if (actionsMsg === 'Rename') {
-      chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
-      renameFileNme(chonkyCustomFileMap);
+      renameFileNme();
     }
     if (actionsMsg === 'Create Folder') {
       if (
@@ -507,9 +506,12 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
     }
   }, [newFolderName])
 
-  const renameFileNme = useCallback(async (chonkyCustomFileMap) => {
+  const renameFileNme = useCallback(async () => {
     let res = await rename(folderPath + '/' + filesSelected[0].name, newFolderName);
     if (res.success) {
+      const directoryIndexSkyFS = await getDirectoryIndex(folderPath);
+      const chonkyCustomFileMap = convertSkyFS_To_ChonkyCustomFileMap(directoryIndexSkyFS);
+      console.log(chonkyCustomFileMap);
       handleFileAction(uploadFiles(chonkyCustomFileMap));
       console.log("### Files Renamed Successfully ####");
       setActionMsg('');
