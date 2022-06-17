@@ -238,13 +238,14 @@ export function FileManagerProvider({ children }: Props) {
     //   ts: 1633844173248,
     //   url: "sia://AAC9eHtFMyl5rpn4wSuxqTVg7CsDbDSlB7AiFE0rIvC0nw",
     // };
+    directoryPath =  dataDomain + directoryPath;
     console.log(
       `createFile : ${directoryPath} ${name} , fileData: ${JSON.stringify(
         fileData
       )}`
     );
     const response = await fileSystemDAC.createFile(
-      dataDomain + directoryPath,
+      directoryPath,
       name,
       fileData
     );
@@ -270,9 +271,10 @@ export function FileManagerProvider({ children }: Props) {
     //   ts: 1633845870700,
     //   url: "sia://AACoTK1V_3mvnA-2vmVrU621vTI0zZiS2eg71vtoh0MEZQ",
     // };
+    directoryPath =  dataDomain + directoryPath;
     console.log(`updateFile : ${directoryPath} ${name} ${fileData}`);
     const response = await fileSystemDAC.updateFile(
-      dataDomain + directoryPath,
+      directoryPath,
       name,
       fileData
     );
