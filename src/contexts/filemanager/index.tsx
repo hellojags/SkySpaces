@@ -71,7 +71,7 @@ export function FileManagerProvider({ children }: Props) {
       if (!directoryIndex.includes(`${currentFolderBasePath}/${folderName}`)) {
         // must check for path, just foldername wont work.
         //create directory using SkyFS
-        const status = await createDirectory(currentFolderBasePath, folderName);
+        const status = await createDirectory(dataDomain + currentFolderBasePath, folderName);
         if (status.success === true) {
           // prepare absolute path
           currentFolderBasePath = `${currentFolderBasePath}/${folderName}`;
@@ -123,7 +123,7 @@ export function FileManagerProvider({ children }: Props) {
         // };
         const tempAbsoluteFolderPath = directoryPath+filewithpath.path;
         const absoluteFolderPath = tempAbsoluteFolderPath.substring(0, tempAbsoluteFolderPath.lastIndexOf(filename));
-        const status = await createFile(absoluteFolderPath, filename, fileData);
+        const status = await createFile(dataDomain + absoluteFolderPath, filename, fileData);
         if (status.success === true) {
           return fileData;
         } else {
@@ -215,7 +215,7 @@ export function FileManagerProvider({ children }: Props) {
     // const path: string = "/localhost/";
     // const name: string = "SkynetHub";
     console.log(`createDirectory : ${path} : ${name}`);
-    const response = await fileSystemDAC.createDirectory(path, name);
+    const response = await fileSystemDAC.createDirectory(dataDomain + path, name);
     console.log(`createDirectory : response -> ${JSON.stringify(response)}`);
     console.log(`<- createDirectory : End`);
     return response;
@@ -244,7 +244,7 @@ export function FileManagerProvider({ children }: Props) {
       )}`
     );
     const response = await fileSystemDAC.createFile(
-      directoryPath,
+      dataDomain + directoryPath,
       name,
       fileData
     );
@@ -272,7 +272,7 @@ export function FileManagerProvider({ children }: Props) {
     // };
     console.log(`updateFile : ${directoryPath} ${name} ${fileData}`);
     const response = await fileSystemDAC.updateFile(
-      directoryPath,
+      dataDomain + directoryPath,
       name,
       fileData
     );
@@ -300,26 +300,26 @@ export function FileManagerProvider({ children }: Props) {
     console.log(`-> shareDirectory : start`);
     //const path: string = "/localhost/SkynetHub";
     console.log(`shareDirectory : ${path}`);
-    const response = await fileSystemDAC.getShareUriReadOnly(path);
+    const response = await fileSystemDAC.getShareUriReadOnly(dataDomain + path);
     console.log(`shareDirectory : response -> ${response}`);
     console.log(`<- shareDirectory : End`);
     return response;
   };
 
   const cutFiles = async (sourceFilePath: string, targetFilePath: string): Promise<IFileSystemDACResponse> => {
-    const response = await fileSystemDAC.moveFile(sourceFilePath, targetFilePath);
+    const response = await fileSystemDAC.moveFile(dataDomain + sourceFilePath,dataDomain + targetFilePath);
     console.log('source path >>>>', sourceFilePath);
     console.log('target path >>>>', targetFilePath);
     return response;
   };
   const copyFiles = async (sourceFilePath: string, targetDirectoryPath: string): Promise<IFileSystemDACResponse> => {
-    const response = await fileSystemDAC.copyFile(sourceFilePath, targetDirectoryPath);
+    const response = await fileSystemDAC.copyFile(dataDomain + sourceFilePath,dataDomain+ targetDirectoryPath);
     console.log('source path >>>>', sourceFilePath);
     console.log('target path >>>>', targetDirectoryPath);
     return response;
   };
   const rename = async (filePath: string, newName: string): Promise<IFileSystemDACResponse> => {
-    const response = await fileSystemDAC.renameFile(filePath, newName);
+    const response = await fileSystemDAC.renameFile(dataDomain + filePath, newName);
     console.log('source path >>>>', filePath);
     console.log('target path >>>>', newName);
     return response;
