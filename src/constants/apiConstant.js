@@ -1,6 +1,6 @@
 export const token = ''
 const apiConstant = {
-  apiUrl: 'https://skynetpro.net',
+  apiUrl: 'https://skynetfree.net',
   SKYNET_JWT: 'skynet-jwt=' + token,
 };
 
