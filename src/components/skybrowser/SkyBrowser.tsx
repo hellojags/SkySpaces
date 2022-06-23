@@ -684,6 +684,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
           component="form"
           noValidate
           autoComplete="off"
+          onSubmit={getFolderName}
         >
           {actionsMsg === 'Create Folder' && <CardHeader title="Create New Folder" />}
           {actionsMsg === 'Rename' && <CardHeader title={`Rename file: ${filesSelected[0].name}`} />}
@@ -703,7 +704,7 @@ export const SkyBrowser: React.FC<VFSProps> = React.memo((props) => {
               </FormControl>
             </CardContent>
             <CardActions className={classes.actionButton}>
-              <Button variant="contained" onClick={getFolderName} >
+              <Button type="submit" variant="contained">
                 Submit
               </Button>
               <Button variant="contained" onClick={handleClose} >
